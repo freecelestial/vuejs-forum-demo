@@ -1,79 +1,49 @@
 <template>
-    <div class="navbar navbar-default topnav">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" @click="toggleNav">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
+    <b-navbar toggleable="lg" type="light" variant="light" class="shadow-sm p-3 mb-5 rounded">
+        <b-navbar-brand href="#">
+            <img src="@/assets/logo.png" class="d-inline-block align-top" alt="logo">
+            ForumDemo
+        </b-navbar-brand>
 
-                <router-link to="/" class="navbar-brand">
-                    <span class="title">{{ logo.title }}</span>
-                    <!--<img :src="logo.src" :alt="logo.title">-->
-                </router-link>
-            </div>
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-            <div id="top-navbar-collapse" :class="['collapse', 'navbar-collapse', { in: showCollapsedNav }]">
-                <ul class="nav navbar-nav">
-                    <li v-for="(item, index) in navList" :class="{ active: index === activeNavIndex }" 
-                    :key="index">
-                        <a href="#" @click="changeNavIndex(index)">{{ item }}</a>
-                    </li>
-                </ul>
+        <b-collapse id="nav-collapse" is-nav>
+            <b-navbar-nav>
+               <!-- <b-nav-item href="#" active>文章</b-nav-item> -->
+            </b-navbar-nav>
 
-                <!-- 入口组件 -->
-                <div class="navbar-right">
-                    <SearchInput/>
-                    <TheEntry/>
-                </div>
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto">
+                <b-nav-form>
+                    <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                    <b-button size="sm" class="my-2 my-sm-0" 
+                    variant="outline-success" type="submit">Search</b-button>
+                </b-nav-form>
 
-            </div>
-        </div>
-    </div>
+                <b-nav-item-dropdown right>
+                    <template v-slot:button-content>
+                        <em>User</em>
+                    </template>
+                    <b-dropdown-item href="#">Profile</b-dropdown-item>
+                    <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+                </b-nav-item-dropdown>
+            </b-navbar-nav>
+        </b-collapse>
+    </b-navbar>
 </template>
 
 <script>
-// 引入 TheEntry.vue 的默认值
-import TheEntry from '@/components/layouts/TheEntry'
-// 引入 SearchInput.vue 默认值
-import SearchInput from '@/components/layouts/SearchInput'
-
-
 export default {
     name: 'TheHeader',
-    // 添加 components 用於註冊 TheEntry
-    components: {
-        TheEntry,
-        SearchInput
-    },
     data() {
         return {
-            logo: {
-                //src: `${this.uploadsUrl}sites/ByvFbNlQYVwhvTyBgLdqitchoacDNznN.jpg`,
-                title: 'VuejsCaff'
-            },
-            navList: ['社区', '头条', '问答', '教程'],
-            activeNavIndex: 0,
-            showCollapsedNav: false
         }
     },
-    beforeCreate() {
-        //this.uploadsUrl = 'https://cdn.learnku.com/uploads/'
-    },
-    methods: {
-        changeNavIndex(index) {
-            this.activeNavIndex = index
-        },
-        toggleNav() {
-            this.showCollapsedNav = !this.showCollapsedNav
-        }
-    }
 }
 </script>
 
 <style scoped>
-    .title { display: none;}
-    .navbar-default .navbar-nav > .active > a { background: rgba(0,0,0,.03);}
+    nav{border-top: 4px solid #4fc08d;}
+    nav>a>img{width:10%}
+
 </style>
