@@ -1,32 +1,19 @@
 <template>
-  <b-row>
-    <b-col md="auto">
-        
-      <b-calendar v-model="value" @context="onContext" locale="en-US"></b-calendar>
-
-    </b-col>
-    <b-col>
-      <p>Value: <b>'{{ value }}'</b></p>
-      <p class="mb-0">Context:</p>
-      <pre class="small">{{ context }}</pre>
-    </b-col>
-  </b-row>
+  <div class="container">
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Welcome from Bootstrap</h1>
+        <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+        <p><a class="btn btn-primary btn-lg" href="http://www.bootcss.com/" role="button" target="_blank">Learn more <span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span></a></p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        value: '',
-        context: null
-      }
-    },
-    methods: {
-      onContext(ctx) {
-        this.context = ctx
-      }
-    }
-  }
+export default {
+  name: 'App'
+}
 </script>
 
 
