@@ -1,76 +1,112 @@
 <template>
-  <ValidationObserver v-slot="{ invalid }">
-        <form @submit.prevent="onSubmit">
-            <div class="row">
-                <div class="col-md-4 col-md-offset-4 floating-box">
-                <!-- 消息组件 -->
-                <Message :show.sync="msgShow" :type="msgType" :msg="msg"/>
-                <!-- .sync 表示雙向綁字 
-                上列等同於 <Message :show="msgShow" @update:show="val => msgShow = val" 
-                :type="msgType" :msg="msg"/>-->
-                    
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                        <h3 class="panel-title">請註冊</h3>
+<b-row  align-h="center">
+    <b-col md="5" class="mx-auto">
+        <b-alert
+            :variant="alertType"
+            dismissible
+            fade
+            :show="alertShow"
+        >
+        {{ alertMsg }}
+        </b-alert>
+        <ValidationObserver ref="observer" v-slot="{ invalid }">
+            <b-form @submit="onSubmit" >
+                <b-card-group>
+                    <b-card title="會員註冊" >
+                    <b-card-text>
+                        <hr>
+                        <ValidationProvider name="用戶名" 
+                                rules="required|min:3|max:30|alpha_first" v-slot="{ valid,errors }">
+                            <b-form-group 
+                                label="用戶名: " 
+                                label-for="username"
+                                description="測試環境僅支援單一用戶註冊，即新註冊者會覆蓋舊註冊者。"
+                            >
+                                <b-form-input
+                                id="username"
+                                v-model="form.username"
+                                :state="errors[0] ? false : (valid ? true : null)"
+                                placeholder="Enter name"
+                                ></b-form-input>
+                                <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
+
+                        <ValidationProvider
+                            rules="required|min:6|max:16"
+                            name="密碼"
+                            vid="password"
+                            v-slot="{ valid, errors }"
+                        >
+                            <b-form-group
+                            label="密碼: "
+                            label-for="password"
+                            description=""
+                            >
+                            <b-form-input
+                                id="password"
+                                type="password"
+                                v-model="form.password"
+                                :state="errors[0] ? false : (valid ? true : null)"
+                                placeholder="Enter password"
+                            ></b-form-input>
+                            <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
+
+                        <ValidationProvider
+                            rules="required|confirmed:password"
+                            name="確認密碼"
+                            v-slot="{ valid, errors }"
+                        >
+                            <b-form-group 
+                                label="確認密碼: "
+                                label-for="cpassword"
+                            >
+                            <b-form-input
+                                id="cpassword"
+                                type="password"
+                                v-model.trim="form.cpassword"
+                                :state="errors[0] ? false : (valid ? true : null)"
+                                placeholder="Confirm Password"
+                            ></b-form-input>
+                            <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                            </b-form-group>
+                        </ValidationProvider>
+
+                        <ValidationProvider name="圖片驗證碼" 
+                                rules="required" v-slot="{ valid,errors }">
+                            <b-form-group label="圖片驗證碼: " label-for="captcha">
+                                <b-form-input
+                                id="captcha"
+                                v-model="form.captcha"
+                                :state="errors[0] ? false : (valid ? true : null)"
+                                placeholder="Enter Captcha Number"
+                                ></b-form-input>
+                                <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                <div class="invalid-feedback d-block" v-if="captchaErrorMsgShow">
+                                    驗證碼不正確</div>
+                            </b-form-group>
+                        </ValidationProvider>
+
+                        <div class="thumbnail border border-light rounded" id="booltip-1" @click="getCaptcha">
+                            <div class="captcha text-center" v-html="captchaTpl"></div>
                         </div>
 
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label class="control-label">用户名</label>
-                                <ValidationProvider name="用户名" 
-                                rules="required|min:3|max:30|alpha_first" v-slot="{ classes,errors }">
-                                <div class="control" :class="classes">
-                                    <input class="form-control" v-model.trim="username" type="text">
-                                    <span>{{ errors[0] }}</span>
-                                </div>
-                                </ValidationProvider>
-                            </div>
+                        <b-tooltip target="booltip-1" title="點擊圖片重新獲取驗證碼" placement="right">
+                        </b-tooltip>
 
-                            <div class="form-group">
-                                <label class="control-label">密碼</label>
-                                <ValidationProvider name="密碼" 
-                                rules="required|min:6|max:16" v-slot="{ classes,errors }" vid="password">
-                                    <div class="control" :class="classes">
-                                        <input class="form-control" v-model.trim="password" type="password">
-                                        <span>{{ errors[0] }}</span>
-                                    </div>
-                                </ValidationProvider>
-                            </div>
+                        <b-button class="mt-4" :disabled="invalid" type="submit" variant="primary" block>
+                            <b-icon icon="person-plus-fill"></b-icon>
+                            註 冊</b-button>
+                    </b-card-text>
+                    </b-card>
+                </b-card-group>
 
-                            <div class="form-group">
-                                <label class="control-label">確認密碼</label>
-                                <ValidationProvider name="確認密碼" rules="required|confirmed:password" v-slot="{ classes,errors }" >
-                                    <div class="control" :class="classes">
-                                        <input class="form-control" v-model.trim="cpassword" type="password">
-                                        <span>{{ errors[0] }}</span>
-                                    </div>
-                                </ValidationProvider>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="control-label">圖片驗證碼</label>
-                                <ValidationProvider name="圖片驗證碼" 
-                                rules="required" v-slot="{ classes,errors }">
-                                    <div class="control" :class="classes">
-                                        <input class="form-control" v-model.trim="captcha" type="text">
-                                        <span>{{ errors[0] }}</span>
-                                    </div>
-                                </ValidationProvider>
-                            </div>
-                            <div class="thumbnail" title="點擊圖片重新獲取驗證碼" @click="getCaptcha">
-                                <div class="captcha vcenter" v-html="captchaTpl"></div>
-                            </div>
-
-                            <button type="submit" :disabled="invalid" class="btn btn-lg btn-success btn-block">
-                                <i class="fa fa-btn fa-sign-in"></i> 註冊
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </ValidationObserver>
+            </b-form>
+        </ValidationObserver>
+    </b-col>
+</b-row>
 </template>
 
 <script>
@@ -84,13 +120,13 @@ import { messages } from 'vee-validate/dist/locale/zh_TW.json';
 // 可使用所有rules
 Object.keys(rules).forEach(rule => {
     extend(rule, {
-         ...rules[rule], // copies rule configuration
-         message: messages[rule] // assign message
+        ...rules[rule], // copies rule configuration
+        message: messages[rule] // assign message
     });
 });
 extend('alpha_first', {
     validate: value => {
-        return value.match(/^[a-zA-Z]+\w*\s?\w*$/) !== null
+        return value.match(/^[a-zA-Z]+/) !== null
     },
     message: '第一個字符，需以字母開頭'
 });
@@ -99,43 +135,50 @@ export default {
     name: 'Register',
     data() {
         return {
-            captchaTpl: '', // 验证码模板
-            username: '', // 用户名
-            password: '', // 密码
-            cpassword: '', // 确认密码
-            captcha: '', // 验证码
-            msg: '', // 消息
-            msgType: '', // 消息类型
-            msgShow: false // 是否显示消息，默认不显示
+            form: {
+                username: '', // 用戶名
+                password: '', // 密碼
+                cpassword: '', // 確認密碼
+                captcha: '', // 驗證碼
+            },
+            captchaTpl: '', // 驗證碼模板
+            captchaErrorMsgShow: false,
+            alertShow: null,
+            alertMsg:'',
+            alertType:'',
         }
      },
     created() {
+        // 實體化後執行
         this.getCaptcha()
     },
     methods: {
         getCaptcha() {
-            const { tpl, captcha } = createCaptcha(1)
+            const { tpl, captcha } = createCaptcha(2)
             this.captchaTpl = tpl
             this.localCaptcha = captcha
         },
-        onSubmit() {
-            if (this.captcha.toUpperCase() !== this.localCaptcha) {
-                this.showMsg('驗證碼不正確')
+        onSubmit(evt) {
+            evt.preventDefault()
+            if (this.form.captcha.toUpperCase() !== this.localCaptcha) {
+                this.captchaErrorMsgShow = true
+                document.getElementById('captcha').select()
                 this.getCaptcha()
-            } else {
-                // 下方只是將註冊資料存在localstorage 或 store，正常要用API確認
-                const user = {
-                    name: this.username,
-                    password: this.password,
-                    avatar: `https://api.adorable.io/avatars/200/${this.username}.png`
-                }
-                // const localUser = ls.getItem('user')
-                const localUser = this.$store.state.user
 
-                // 是否註冊過
+            } else {
+                // 下方只是將註冊資料存在 localstorage 或 store，正常要用API確認
+                const user = {
+                    name: this.form.username,
+                    password: this.form.password,
+                    avatar: `https://api.adorable.io/avatars/200/${this.form.username}.png`
+                }
+
+                // const localUser = ls.getItem('user')
+                // 取值確認是否已註冊過
+                const localUser = this.$store.state.user
                 if (localUser) {
                     if (localUser.name === user.name) {
-                        this.showMsg('用户名已存在')
+                        this.showAlert('用戶名已存在')
                     } else {
                         this.login(user)
                     }
@@ -145,19 +188,17 @@ export default {
             }
         },
         login(user) {
-            //  ls.setItem('user', user)
-            // 分发 login 事件，以保存用户信息和登录
+            // ls.setItem('user', user)
+            // 分發 login 事件，以保存用戶信息和登錄
             this.$store.dispatch('login', user)
-
-            this.showMsg('注册成功', 'success')
         },
-        showMsg(msg, type = 'warning') {
-            this.msg = msg
-            this.msgType = type
-            this.msgShow = false
-
+        showAlert(msg, type = 'warning') {
+            this.alertMsg = msg
+            this.alertType = type
+            this.alertShow = false
             this.$nextTick(() => {
-                this.msgShow = true
+                this.alertShow = true
+                document.documentElement.scrollTop = 20
             })
         }
     },
@@ -168,14 +209,9 @@ export default {
 </script>
 
 <style scoped>
-    .thumbnail { width: 170px; margin-top: 10px; cursor: pointer;}
+    .thumbnail { width: 170px; margin-top: 10px; cursor: pointer;padding:4px;}
     .thumbnail .captcha { height: 46px; background: #E1E6E8;}
-    .captcha { font-size: 24px; font-weight: bold; user-select: none;}
-    .control.invalid span {
-        display:block;
-        margin-top: 5px;
-        margin-bottom: 10px;
-        color:#a94442;
-    }
-
+    .captcha { display: flex;justify-content: space-evenly; 
+                font-size: 24px; font-weight: bold; user-select: none;}
+    form,h4 { font-weight:700 }
 </style>

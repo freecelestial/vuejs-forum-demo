@@ -1,119 +1,80 @@
 <template>
     <div>
-        <Message :show.sync="msgShow" :type="msgType" :msg="msg"/>
+        <b-alert
+            :variant="alertType"
+            dismissible
+            fade
+            :show="dismissCountDown"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+        >
+        {{ alertMsg }} {{ dismissCountDown }} 秒...
+        </b-alert>
 
-        <!-- 帖子列表 -->
-        <div class="col-md-9 topics-index main-col">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <ul class="list-inline topic-filter">
-                        <li v-for="item in filters" :key="item.title">
-                            <router-link v-title="item.title" :class="{ active: filter === item.filter }" 
-                            :to="`/topics?filter=${item.filter}`">{{ item.name }}</router-link>
-                        </li>
-                    </ul>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="panel-body remove-padding-horizontal">
-                    <ul class="list-group row topic-list">
-                        <li v-for="article in articles" :key="article.articleId" class="list-group-item">
-                            <router-link :to="`/articles/${article.articleId}/content`" tag="div" class="reply_count_area hidden-xs pull-right">
-                                <div class="count_set">
-                                <span class="count_of_votes" title="投票数">{{ article.likeUsers ? article.likeUsers.length : 0 }}</span>
-                                <span class="count_seperator">/</span>
-                                <span class="count_of_replies" title="回复数">{{ article.comments ? article.comments.length : 0 }}</span>
-                                <span class="count_seperator">|</span>
-                                <abbr class="timeago">{{ article.date | moment('from') }}</abbr>
-                                </div>
-                            </router-link>
-
-                            <router-link :to="`/${article.uname}`" tag="div" class="avatar pull-left">
-                                <img :src="article.uavatar" class="media-object img-thumbnail avatar avatar-middle">
-                            </router-link>
-                            
-                            <router-link :to="`/articles/${article.articleId}/content`" tag="div" class="infos">
-                                <div class="media-heading">
-                                {{ article.title }}
-                                </div>
-                            </router-link>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- 分页组件 -->
-                <div class="panel-footer text-right remove-padding-horizontal pager-footer">
-                    <Pagination :currentPage="currentPage" :total="total" 
-                    :pageSize="pageSize" :onPageChange="changePage" />
-                </div>
-
-            </div>
-        </div>
-
-    <!-- 侧栏 -->
-    <TheSidebar/>
     </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-// 引入 TheSidebar.vue 的默认值
+// 引入 TheSidebar.vue 的默認值
 import TheSidebar from '@/components/layouts/TheSidebar'
 
 
 export default {
     name: 'Home',
     components: {
-        // 因为只在首页使用侧栏，所以将 TheSidebar 注册到局部
+        // 因爲只在首頁使用側欄，所以將 TheSidebar 註冊到局部
         TheSidebar
     },
     data() {
         return {
-            msg: '', // 消息
-            msgType: '', // 消息类型
-            msgShow: false, // 是否显示消息，默认不显示
+            alertShow: null,
+            alertMsg:'',
+            alertType:'',
+            dismissSecs: 5,
+            dismissCountDown: 0,
             articles: [], // 文章列表
-            filter: 'default', // 默认过滤方式
-            filters: [ // 过滤方式列表
-                { filter: 'default', name: '活跃', title: '最后回复排序'},
-                { filter: 'excellent', name: '精华', title: '只看加精的话题'},
-                { filter: 'vote', name: '投票', title: '点赞数排序'},
-                { filter: 'recent', name: '最近', title: '发布时间排序'},
-                { filter: 'noreply', name: '零回复', title: '无人问津的话题'}
+            filter: 'default', // 默認過濾方式
+            filters: [ // 過濾方式列表
+                { filter: 'default', name: '活躍', title: '最後回覆排序'},
+                { filter: 'excellent', name: '精華', title: '只看加精的話題'},
+                { filter: 'vote', name: '投票', title: '點贊數排序'},
+                { filter: 'recent', name: '最近', title: '發佈時間排序'},
+                { filter: 'noreply', name: '零回覆', title: '無人問津的話題'}
             ],
-            total: 0, // 文章总数
-            pageSize: 20, // 每页条数
+            total: 0, // 文章總數
+            pageSize: 20, // 每頁條數
         }
     },
-    // 组件内的路由守卫
-    // 此守卫不能访问 this，但我们通过传一个 vm 给 next，就可以使用上面的 vm 来访问组件实例
+    // 組件內的路由守衛
+    // 此守衛不能訪問 this，但我們通過傳一個 vm 給 next，就可以使用上面的 vm 來訪問組件實例
     beforeRouteEnter(to, from, next) {
-        // 路由的名称，对应路由配置中的 name
+        // 路由的名稱，對應路由配置中的 name
         const fromName = from.name
-        // 获取 logout 参数
+        // 獲取 logout 參數
         const logout = to.params.logout
 
-        // 确认路由後執行
+        // 確認路由後執行
         next(vm => {
-            // 通过 vm 参数访问组件实例，已登录时，评估路由名称
+            // 通過 vm 參數訪問組件實例，已登錄時，評估路由名稱
             if (vm.$store.state.auth) {
                 switch (fromName) {
-                    // 如果从注册页面跳转过来
+                    // 如果從註冊頁面跳轉過來
                     case 'Register':
-                        // 显示注册成功
-                        vm.showMsg('注册成功')
+                        // 顯示註冊成功
+                        vm.showAlert('註冊成功')
                     break
                     case 'Login':
-                        // 显示登录成功
-                        vm.showMsg('登录成功')
+                        // 顯示登錄成功
+                        vm.showAlert('登入成功')
                     break
                 }
             } else if (logout) {
-                // logout 返回 true 时，显示操作成功提示
-                vm.showMsg('操作成功')
+                // logout 返回 true 時，顯示操作成功提示
+                vm.showAlert('登出成功')
             }
 
-            // 确认渲染该组件的对应路由时，设置相关数据
+            // 確認渲染該組件的對應路由時，設置相關數據
             vm.setDataByFilter(to.query.filter)
 
         })
@@ -123,7 +84,7 @@ export default {
             'auth',
             'user',
         ]),
-        // 当前页，从查询参数 page 返回
+        // 當前頁，從查詢參數 page 返回
         currentPage() {
             return parseInt(this.$route.query.page) || 1
         }
@@ -131,38 +92,46 @@ export default {
     watch: {
         auth(value) {
             if (!value) {
-                this.showMsg('操作成功')
+                this.showAlert('登出成功', 'success')
             }
         },
-        // 监听 '$route'，在查询参数变化后，设置相关数据
+        // 監聽 '$route'，在查詢參數變化後，設置相關數據
         '$route'(to) {
             this.setDataByFilter(to.query.filter)
         }
     },
     methods: {
-        showMsg(msg, type = 'success') {
-            this.msg = msg
-            this.msgType = type
-            this.msgShow = true
+        showAlert(msg, type = 'success') {
+            this.alertMsg = msg
+            this.alertType = type
+            this.alertShow = false
+            this.$nextTick(() => {
+                //this.alertShow = true
+                this.dismissCountDown = this.dismissSecs
+                document.documentElement.scrollTop = 20
+            })
+        },
+        countDownChanged(dismissCountDown) {
+            this.dismissCountDown = dismissCountDown
         },
         setDataByFilter(filter = 'default') {
-            // 每页条数
+            // 每頁條數
             const pageSize = this.pageSize
-            // 当前页
+            // 當前頁
             const currentPage = this.currentPage
-            // 过滤后的所有文章
+            // 過濾後的所有文章
             const allArticles = this.$store.getters.getArticlesByFilter(filter)
 
             this.filter = filter
-            // 文章总数
+            // 文章總數
             this.total = allArticles.length
-            // 当前页的文章
+            // 當前頁的文章
             this.articles = allArticles.slice(pageSize * (currentPage - 1), pageSize * currentPage)
         },
-        // 回调，组件的当前页改变时调用
+        // 回調，組件的當前頁改變時調用
         changePage(page) {
-            // 在查询参数中混入 page，并跳转到该地址
-            // 混入部分等价于 Object.assign({}, this.$route.query, { page: page })
+            // 在查詢參數中混入 page，並跳轉到該地址
+            // 混入部分等價於 Object.assign({}, this.$route.query, { page: page })
             // 有相同屬性時，後方的page會取代前方的page
             this.$router.push({ query: { ...this.$route.query, page } })
         }

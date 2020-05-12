@@ -1,10 +1,10 @@
 <template>
-    <b-container class="fixed-bottom bg-light shadow-sm p-0 mt-5 rounded" fluid>
+    <b-container style="height: 40px;" class="bg-light shadow-sm pt-0 mt-3 rounded" fluid>
         <b-row>
-            <b-col class="m-3 text-center">
-                <p v-b-tooltip.hover :title="tooltipTitle" 
-                class="padding-top-xsm">{{ description }}</p>
-                <span v-html="designer"></span>
+            <b-col class="my-2 text-center">
+                <div v-b-tooltip.hover :title="tooltipTitle">{{ description }}
+                    <span v-html="designer"></span>
+                </div>
             </b-col>
         </b-row>
     </b-container>
@@ -17,9 +17,9 @@ export default {
     name: 'TheFooter',
     data() {
         return {
-            description: '此網站由 Vue.js 編寫',
-            tooltipTitle: '使用技術如下：BootstrapVue, vue-router, Vuex, Mock.js, axios, VeeValidate ',
-            designer: `<span style="font-size:0.9em">Designed by Jim</span>`,
+            description: '此網站使用 Vue.js 開發',
+            tooltipTitle: '相關技術如下：Webpack, BootstrapVue, vue-router, Vuex, Mock.js, axios, VeeValidate ',
+            designer: `<span class="ml-1" style="font-size:0.9em">Designed by Jim</span>`,
         }
     }
 }

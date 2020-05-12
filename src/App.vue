@@ -1,6 +1,13 @@
 <template>
-    <div id="wrap">
+    <div id="wrap" >
         <TheHeader/>
+
+        <b-container style="min-height: calc(100vh - 65px);">
+            <div style="height: 85px; "></div>
+            <router-view/>
+            <div style="height: 20px; "></div>
+        </b-container>
+        
         <TheFooter/>
     </div>
 </template>
@@ -17,9 +24,6 @@ export default {
     }
 }
 </script>
-
-
-
 
 <style lang="scss">
     // custom.scss
