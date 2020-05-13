@@ -1,20 +1,17 @@
 <template>
-    <div class="users-show">
-        <div class="col-md-3 main-col">
-            <div class="box">
-                <div class="padding-md">
-                <div class="list-group text-center">
-                    <router-link v-for="link in links" :key="link.name" :to="`/users/1/${link.name}`" class="list-group-item">
-                    <i :class="`text-md fa fa-${link.icon}`"></i>
-                    {{ link.title }}
-                    </router-link>
-                </div>
-                </div>
-            </div>
-        </div>
-
-        <router-view/>
-    </div>
+    <b-row  align-h="center">
+        <b-col md="3">
+            <b-list-group class="shadow-sm p-1 mb-5 ">
+                <b-list-group-item v-for="link in links" :key="link.name" 
+                :to="`/users/${id}/${link.name}`" class="border-light">
+                    <b-icon class="h4" :icon="`${link.icon}`"></b-icon> {{ link.title }}
+                </b-list-group-item>
+            </b-list-group>
+        </b-col>
+        <b-col md="7">
+            <router-view/>
+        </b-col>
+    </b-row>
 </template>
 
 <script>
@@ -22,21 +19,22 @@ export default {
     name: 'UsersEdit',
     data() {
         return {
+            id:1,
             links: [
                 {
                     name: 'edit',
-                    title: '个人信息',
-                    icon: 'list-alt'
+                    title: '基本資料',
+                    icon: 'people-circle'
                 },
                 {
                     name: 'edit_avatar',
-                    title: '修改头像',
-                    icon: 'picture-o'
+                    title: '修改頭像',
+                    icon: 'image'
                 },
                 {
                     name: 'edit_password',
-                    title: '修改密码',
-                    icon: 'lock'
+                    title: '修改密碼',
+                    icon: 'lock-fill'
                 }
             ]
         }
@@ -45,5 +43,6 @@ export default {
 </script>
 
 <style scoped>
-
+    .b-icon.bi {vertical-align: middle;}
+    .list-group-item.active {color: #004085;background-color: #b8daff;}
 </style>

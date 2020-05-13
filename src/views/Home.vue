@@ -1,15 +1,6 @@
 <template>
     <div>
-        <b-alert
-            :variant="alertType"
-            dismissible
-            fade
-            :show="dismissCountDown"
-            @dismissed="dismissCountDown=0"
-            @dismiss-count-down="countDownChanged"
-        >
-        {{ alertMsg }} {{ dismissCountDown }} 秒...
-        </b-alert>
+
 
     </div>
 </template>
@@ -28,11 +19,6 @@ export default {
     },
     data() {
         return {
-            alertShow: null,
-            alertMsg:'',
-            alertType:'',
-            dismissSecs: 5,
-            dismissCountDown: 0,
             articles: [], // 文章列表
             filter: 'default', // 默認過濾方式
             filters: [ // 過濾方式列表
@@ -59,19 +45,17 @@ export default {
             // 通過 vm 參數訪問組件實例，已登錄時，評估路由名稱
             if (vm.$store.state.auth) {
                 switch (fromName) {
-                    // 如果從註冊頁面跳轉過來
+                    // 從註冊頁面跳轉過來
                     case 'Register':
-                        // 顯示註冊成功
-                        vm.showAlert('註冊成功')
+                        vm.makeToast('註冊成功')
                     break
                     case 'Login':
-                        // 顯示登錄成功
-                        vm.showAlert('登入成功')
+                        vm.makeToast('登入成功')
                     break
                 }
             } else if (logout) {
                 // logout 返回 true 時，顯示操作成功提示
-                vm.showAlert('登出成功')
+                vm.makeToast('登出成功')
             }
 
             // 確認渲染該組件的對應路由時，設置相關數據
@@ -92,7 +76,7 @@ export default {
     watch: {
         auth(value) {
             if (!value) {
-                this.showAlert('登出成功', 'success')
+                this.makeToast('登出成功')
             }
         },
         // 監聽 '$route'，在查詢參數變化後，設置相關數據
@@ -101,14 +85,12 @@ export default {
         }
     },
     methods: {
-        showAlert(msg, type = 'success') {
-            this.alertMsg = msg
-            this.alertType = type
-            this.alertShow = false
-            this.$nextTick(() => {
-                //this.alertShow = true
-                this.dismissCountDown = this.dismissSecs
-                document.documentElement.scrollTop = 20
+        makeToast(msg) {
+                this.$bvToast.toast(msg, {
+                title:'訊息',
+                toaster: 'b-toaster-bottom-right',
+                autoHideDelay: 5000,
+                appendToast: true
             })
         },
         countDownChanged(dismissCountDown) {

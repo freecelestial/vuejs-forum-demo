@@ -12,21 +12,21 @@
         <ValidationObserver ref="observer" v-slot="{ invalid }">
             <b-form @submit="onSubmit" >
                 <b-card-group>
-                    <b-card title="會員註冊" >
+                    <b-card title="會員註冊" class="bg-light">
                     <b-card-text>
                         <hr>
-                        <ValidationProvider name="用戶名" 
+                        <ValidationProvider name="會員名稱" 
                                 rules="required|min:3|max:30|alpha_first" v-slot="{ valid,errors }">
                             <b-form-group 
-                                label="用戶名: " 
+                                label="會員名稱: " 
                                 label-for="username"
-                                description="測試環境僅支援單一用戶註冊，即新註冊者會覆蓋舊註冊者。"
+                                description="測試環境僅支援單一會員註冊，即新註冊者會覆蓋舊註冊者。"
                             >
                                 <b-form-input
                                 id="username"
                                 v-model="form.username"
                                 :state="errors[0] ? false : (valid ? true : null)"
-                                placeholder="Enter name"
+                                placeholder="請輸入會員名稱"
                                 ></b-form-input>
                                 <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
                             </b-form-group>
@@ -48,7 +48,7 @@
                                 type="password"
                                 v-model="form.password"
                                 :state="errors[0] ? false : (valid ? true : null)"
-                                placeholder="Enter password"
+                                placeholder="請輸入密碼"
                             ></b-form-input>
                             <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
                             </b-form-group>
@@ -68,7 +68,7 @@
                                 type="password"
                                 v-model.trim="form.cpassword"
                                 :state="errors[0] ? false : (valid ? true : null)"
-                                placeholder="Confirm Password"
+                                placeholder="請再次輸入密碼"
                             ></b-form-input>
                             <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
                             </b-form-group>
@@ -81,7 +81,7 @@
                                 id="captcha"
                                 v-model="form.captcha"
                                 :state="errors[0] ? false : (valid ? true : null)"
-                                placeholder="Enter Captcha Number"
+                                placeholder="請輸入圖片驗證碼"
                                 ></b-form-input>
                                 <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
                                 <div class="invalid-feedback d-block" v-if="captchaErrorMsgShow">
@@ -154,7 +154,7 @@ export default {
     },
     methods: {
         getCaptcha() {
-            const { tpl, captcha } = createCaptcha(2)
+            const { tpl, captcha } = createCaptcha(3)
             this.captchaTpl = tpl
             this.localCaptcha = captcha
         },

@@ -27,17 +27,23 @@
                 </b-nav-form>
 
                 <b-nav-item-dropdown v-if=" user && auth " right>
-                        <template v-slot:button-content>
-                            <span v-if="user">
-                                <b-img v-if="user.avatar" :src="user.avatar" 
-                                rounded="circle" alt="User Image"></b-img>
-                                <span v-if="user.name">{{ user.name }}</span>
-                            </span>
-                        </template>
-                        <b-dropdown-item :to="`/${user.name}`">
-                            <b-icon icon="people-circle"></b-icon> 個人資料</b-dropdown-item>
-                        <b-dropdown-item @click="logout">
-                            <b-icon icon="box-arrow-up-right"></b-icon> 登出</b-dropdown-item>
+                    <template v-slot:button-content>
+                        <span v-if="user">
+                            <b-img v-if="user.avatar" :src="user.avatar" 
+                            rounded="circle" alt="User Image"></b-img>
+                            <span v-if="user.name">{{ user.name }}</span>
+                        </span>
+                    </template>
+                    <b-dropdown-item :to="`/users/${id}/edit`">
+                        <b-icon icon="person-lines-fill"></b-icon> 個人資料
+                    </b-dropdown-item>
+                    <b-dropdown-item >
+                        <b-icon icon="file-earmark-text"></b-icon> 專欄文章
+                    </b-dropdown-item>
+
+                    <b-dropdown-item @click="logout">
+                        <b-icon icon="box-arrow-up-right"></b-icon> 登出
+                    </b-dropdown-item>
                 </b-nav-item-dropdown>
 
                 <span v-else>
@@ -72,7 +78,8 @@ export default {
     },
     data() {
         return {
-            boxShow:false,
+            id: 1,
+            boxShow: false,
         }
     },
     methods: {

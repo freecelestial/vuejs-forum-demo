@@ -1,86 +1,118 @@
 <template>
-  <ValidationObserver v-slot="{ invalid }">
-        <form @submit.prevent="onSubmit">
-            <div class="col-md-9 left-col">
-                <div class="panel panel-default padding-md">
-                    <div class="panel-body">
-                        <h2><i class="fa fa-cog"></i> 编辑个人资料</h2>
-                    <hr>
-                    <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">用户名</label>
-                        <div class="col-sm-6">
-                            <ValidationProvider name="用户名" 
-                            rules="required|min:3|max:30|alpha_first" v-slot="{ classes,errors }">
-                                <div class="control" :class="classes">
-                                    <input class="form-control" v-model.trim="username" type="text">
-                                    <span>{{ errors[0] }}</span>
-                                </div>
-                            </ValidationProvider>
-                        </div>
-                    </div>
+    <b-col>
+        <b-alert
+            :variant="alertType"
+            dismissible
+            fade
+            :show="dismissCountDown"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+        >
+            <p>{{ alertMsg }}</p>
+            <b-progress
+                :variant="alertType"
+                :max="dismissSecs"
+                :value="dismissCountDown"
+                height="4px"
+            ></b-progress>
+        
+        </b-alert>
+        
+        <ValidationObserver ref="observer" v-slot="{ invalid }">
+            <b-form @submit="onSubmit">
+                <b-card-group class="border shadow-sm p-1 mb-5">
+                    <b-card-body>
+                        <b-card class="border-0">
+                            <b-card-text>
+                                <b-card-title>
+                                    <b-icon class="h1" icon="people-circle" variant="primary"></b-icon> 
+                                    基本資料
+                                </b-card-title>
+                                <hr>
+                                <ValidationProvider name="用戶名" 
+                                        rules="required|min:3|max:30|alpha_first" v-slot="{ valid,errors }">
+                                    <b-form-group 
+                                        label="用戶名: " 
+                                        label-for="username"
+                                        description=""
+                                    >
+                                        <b-form-input
+                                        id="username"
+                                        v-model="form.username"
+                                        :state="errors[0] ? false : (valid ? true : null)"
+                                        placeholder=""
+                                        ></b-form-input>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">性别</label>
-                        <div class="col-sm-6">
-                            <ValidationProvider name="性别" 
-                            rules="required" v-slot="{ classes,errors }">
-                                <div class="control" :class="classes">
-                                    <select v-model="gender" class="form-control">
-                                        <option value="">未選擇</option>
-                                        <option value="male">男</option>
-                                        <option value="female">女</option>
-                                    </select>
-                                    <span>{{ errors[0] }}</span>
-                                </div>
-                            </ValidationProvider>
-                        </div>
-                    </div>
+                                <ValidationProvider name="性別" 
+                                        rules="required" v-slot="{ valid,errors }">
+                                        <b-form-group 
+                                            label="性別: " 
+                                        >
+                                            <b-form-radio-group
+                                                id="gender"
+                                                v-model="form.gender"
+                                                :options="form.genderList"
+                                                name="性別"
+                                            ></b-form-radio-group>
+                                        </b-form-group>
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">興趣</label>
-                        <div class="col-sm-6">
-                            <ValidationProvider name="興趣" 
-                            rules="required" v-slot="{ classes,errors }">
-                                <div class="control" :class="classes">
-                                    <label v-for="(item,index) in hobbiesList" class="checkbox-inline" :key="index">
-                                        <input v-model="hobbies" :value="item" type="checkbox"> {{ item }}
-                                    </label>
-                                    <span>{{ errors[0] }}</span>
-                                </div>
-                            </ValidationProvider>
-                        </div>
-                    </div>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
 
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">個人簡介</label>
-                        <div class="col-sm-6">
-                            <ValidationProvider name="個人簡介" 
-                            rules="max:100" v-slot="{ classes,errors }">
-                                <div class="control" :class="classes">
-                                    <textarea v-model.trim="introduction" type="text" class="form-control"></textarea>
-                                    <span>{{ errors[0] }}</span>
-                                </div>
-                            </ValidationProvider>
-                        </div>
-                    </div>
+                                <ValidationProvider name="興趣" 
+                                        rules="required" v-slot="{ valid,errors }">
+                                        <b-form-group 
+                                            label="興趣: " 
+                                        >
+                                            <b-form-checkbox-group
+                                                id="hobbies"
+                                                v-model="form.hobbies"
+                                                :options="form.hobbiesList"
+                                                name="興趣"
+                                            ></b-form-checkbox-group>
+                                        </b-form-group>
 
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-6">
-                            <button type="submit" :disabled="invalid" class="btn btn-primary">修改</button>
-                        </div>
-                    </div>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </ValidationObserver>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <ValidationProvider name="簡介" 
+                                        rules="max:200" v-slot="{ valid,errors }">
+                                    <b-form-group 
+                                        label="簡介: " 
+                                        label-for="introduction"
+                                        description="最多 200 字元"
+                                    >
+                                        <b-form-textarea
+                                            id="introduction"
+                                            v-model="form.introduction"
+                                            :state="errors[0] ? false : 
+                                            (valid && form.introduction && form.introduction.length>0 ? true : null)"
+                                            rows="4"
+                                            max-rows="10"
+                                            placeholder=""
+                                        ></b-form-textarea>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <b-button class="mt-4" :disabled="invalid" type="submit" variant="primary" block>
+                                    <b-icon icon="wrench"></b-icon> 修 改
+                                </b-button>
+                            </b-card-text>
+                        </b-card>
+                    </b-card-body>
+                </b-card-group>
+            </b-form>
+        </ValidationObserver>
+    </b-col>
 </template>
 
 <script>
-import createCaptcha from '@/utils/createCaptcha'
-import ls from '@/utils/localStorage'
 // 引入表單驗證
 import { ValidationProvider, extend ,ValidationObserver} from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
@@ -105,38 +137,64 @@ export default {
     name: 'EditProfile',
     data() {
         return {
-            username: '', // 用户名
-            gender: '', // 性别
-            hobbiesList: ['泡網','運動','健身','遊遊','遊戲'],
-            hobbies: [], // 兴趣
-            introduction: '' // 个人简介
+            form:{
+                username: '', // 用戶名
+                gender: 'null', // 性別
+                genderList:[
+                            { text: '未知', value: 'null' },
+                            { text: '男', value: 'male' },
+                            { text: '女', value: 'female' }
+                        ],
+                hobbiesList: ['上網','運動','旅遊','畫圖','其它'],
+                hobbies: [], // 興趣
+                introduction: '' // 個人簡介
+            },
+            alertShow: null,
+            alertMsg:'',
+            alertType:'',
+            dismissSecs: 5,
+            dismissCountDown: 0,
         }
     },
+    // 初始化表單
     created() {
         const user = this.$store.state.user
 
         if (user && typeof user === 'object') {
             const { name, gender, hobbies, introduction } = user
 
-            this.username = name
-            this.gender = gender || this.gender
-            this.hobbies = hobbies || this.hobbies
-            this.introduction = introduction
+            this.form.username = name
+            this.form.gender = gender || this.form.gender
+            this.form.hobbies = hobbies || this.form.hobbies
+            this.form.introduction = introduction
         }
     },
     methods: {
-        onSubmit() {
+        onSubmit(evt) {
+            evt.preventDefault()
             this.$nextTick(() => {
                 this.$store.dispatch('updateUser', {
-                    name: this.username,
-                    gender: this.gender,
-                    hobbies: this.hobbies,
-                    introduction: this.introduction
+                    name: this.form.username,
+                    gender: this.form.gender,
+                    hobbies: this.form.hobbies,
+                    introduction: this.form.introduction
                 })
-                this.$message.show('修改成功')
 
+                this.showAlert('修改成功')
             })
-        }
+        },
+        showAlert(msg, type = 'success') {
+            this.alertMsg = msg
+            this.alertType = type
+            this.alertShow = false
+            this.$nextTick(() => {
+                this.dismissCountDown = this.dismissSecs
+                document.documentElement.scrollTop = 20
+            })
+        },
+        countDownChanged(dismissCountDown) {
+            this.dismissCountDown = dismissCountDown
+        },
     },
     components: {
         ValidationProvider,ValidationObserver
@@ -145,10 +203,6 @@ export default {
 </script>
 
 <style scoped>
-    .control.invalid span {
-        display:block;
-        margin-top: 5px;
-        margin-bottom: 10px;
-        color:#a94442;
-    }
+    form,h4 { font-weight:700 }
+    .b-icon.bi {vertical-align: middle;}
 </style>

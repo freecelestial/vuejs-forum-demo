@@ -12,13 +12,13 @@
         <ValidationObserver ref="observer" v-slot="{ invalid }">
             <b-form @submit="onSubmit" >
                 <b-card-group>
-                    <b-card title="會員登入" >
+                    <b-card title="會員登入" class="bg-light">
                     <b-card-text>
                         <hr>
-                        <ValidationProvider name="用戶名" 
+                        <ValidationProvider name="會員名稱" 
                                 rules="required" v-slot="{ valid,errors }">
                             <b-form-group 
-                                label="用戶名: " 
+                                label="會員名稱: " 
                                 label-for="username"
                                 description=""
                             >
@@ -26,7 +26,7 @@
                                 id="username"
                                 v-model="form.username"
                                 :state="errors[0] ? false : (valid ? true : null)"
-                                placeholder="Enter name"
+                                placeholder="請輸入會員名稱"
                                 ></b-form-input>
                                 <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
                             </b-form-group>
@@ -48,7 +48,7 @@
                                 type="password"
                                 v-model="form.password"
                                 :state="errors[0] ? false : (valid ? true : null)"
-                                placeholder="Enter password"
+                                placeholder="請輸入密碼"
                             ></b-form-input>
                             <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
                             </b-form-group>
@@ -95,7 +95,8 @@ export default {
         }
     },
     methods: {
-        onSubmit() {
+        onSubmit(evt) {
+            evt.preventDefault()
             const user = {
                 name: this.form.username,
                 password: this.form.password
@@ -129,5 +130,5 @@ export default {
 </script>
 
 <style scoped>
-
+    form,h4 { font-weight:700 }
 </style>

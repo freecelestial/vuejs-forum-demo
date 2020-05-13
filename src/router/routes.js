@@ -26,12 +26,12 @@ export default [
         // 子路由的配置
         children: [
             {
-                // 子路由的 path 为空值 ''，表示该页面作为默认子路由，
-                // 在导航到父级路由（/users/1/edit）时，就自動加载
+                // 子路由的 path 爲空值 ''，表示該頁面作爲默認子路由，
+                // 在導航到父級路由（/users/1/edit）時，就自動加載
                 path: '',
                 name: 'EditProfile',
                 component: () => import('@/views/users/Profile.vue'),
-                // auth 为 true，表示此路由需要登入才能访问
+                // auth 爲 true，表示此路由需要登入才能訪問
                 meta: { auth: true }
             },
             {
@@ -55,10 +55,10 @@ export default [
         meta: { auth: true }
     },
     {
-        // 冒号开头，代表的是该项参数是动态的
+        // 冒號開頭，代表的是該項參數是動態的
         path: '/articles/:articleId/edit',
         name: 'Edit',
-        // 跟 Create 一样的组件页面
+        // 跟 Create 一樣的組件頁面
         component: () => import('@/views/articles/Create'),
         meta: { auth: true }
     },
@@ -68,9 +68,9 @@ export default [
         component: () => import('@/views/Search')
     },
     {
-        // 动态路径参数 :user，用来匹配用户名
+        // 動態路徑參數 :user，用來匹配用戶名
         // 去掉父路由的 name
-        // 使用名称导航时，我们应该使用默认子路由的名称
+        // 使用名稱導航時，我們應該使用默認子路由的名稱
         path: '/:user',
         component: () => import('@/views/articles/Column'),
         children: [
