@@ -78,13 +78,15 @@ const actions = {
 
 // 倉庫的計算屬性
 const getters = {
+    // id 為傳入的參數
     getArticleById: (state, getters) => (id) => {
-      // 使用派生狀態 computedArticles 作爲所有文章
+      // 使用加入會員資料的所有文章
       let articles = getters.computedArticles
   
       if (Array.isArray(articles)) {
             // 傳進來的 id 和文章的 articleId 相同時，返回這些文章
             articles = articles.filter(article => parseInt(id) === parseInt(article.articleId))
+            // 有文章的情況下，返回第一筆
             return articles.length ? articles[0] : null
       } else {
             return null

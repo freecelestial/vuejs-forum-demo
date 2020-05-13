@@ -205,4 +205,5 @@ export default {
 <style scoped>
     form,h4 { font-weight:700 }
     .b-icon.bi {vertical-align: middle;}
+
 </style>

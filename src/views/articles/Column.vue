@@ -1,32 +1,30 @@
 <template>
-    <div class="blog-container">
-        <div class="blog-pages">
-        <!-- 專欄文章列表 -->
-        <router-view/>
+    <b-row  align-h="center">
+        <b-col md="3">
+            <b-card class="shadow-sm p-1 mb-5 "
+                :img-src="userAvatar"
+                img-alt="Avatar"
+                img-top
+            >
+                <b-card-body>
+                    <b-card-title class="text-center">{{ userName }} 的專欄</b-card-title>
+                </b-card-body>
 
-        <div class="col-md-3 main-col pull-left">
-            <div class="panel panel-default corner-radius">
-                <div class="panel-body text-center topic-author-box blog-info">
-                    <div class="image blog-cover">
-                        <router-link :to="`/${userName}`">
-                            <img :src="userAvatar" class="avatar-112 avatar img-thumbnail">
-                        </router-link>
-                    </div>
-                    <div class="blog-name">
-                        <h4>
-                            <router-link :to="`/${userName}`">{{ userName }} 的专栏</router-link>
-                        </h4>
-                    </div>
-                    <hr>
-                    <router-link :to="`/${userName}`">
-                        <li class="list-group-item"><i class="text-md fa fa-list-ul"></i> 专栏文章（{{ articleNum }}）</li>
-                    </router-link>
-                </div>
-            </div>
-        </div>
-        </div>
-    </div>
+                <b-card-body>
+                    <b-button :to="`/${ userName }`" variant="outline-success" block>
+                        <b-icon icon="file-earmark-text"></b-icon>
+                        專欄文章 ( {{ articleNum }} )
+                    </b-button>
+                </b-card-body>
+
+            </b-card>
+        </b-col>
+        <b-col md="7">
+            <router-view/>
+        </b-col>
+    </b-row>
 </template>
+
 
 <script>
 // 引入 mapState 辅助函数

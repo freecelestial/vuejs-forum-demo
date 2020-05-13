@@ -10,6 +10,12 @@ import store from './store'
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
+// 引入過濾器
+import './filters'
+
+
+
+
 // Install BootstrapVue
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin

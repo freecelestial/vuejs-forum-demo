@@ -45,4 +45,5 @@ export default {
 <style scoped>
     .b-icon.bi {vertical-align: middle;}
     .list-group-item.active {color: #004085;background-color: #b8daff;}
+    
 </style>

@@ -86,7 +86,7 @@ export default {
     },
     methods: {
         makeToast(msg) {
-                this.$bvToast.toast(msg, {
+            this.$bvToast.toast(msg, {
                 title:'訊息',
                 toaster: 'b-toaster-bottom-right',
                 autoHideDelay: 5000,

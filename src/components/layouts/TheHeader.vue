@@ -37,7 +37,10 @@
                     <b-dropdown-item :to="`/users/${id}/edit`">
                         <b-icon icon="person-lines-fill"></b-icon> 個人資料
                     </b-dropdown-item>
-                    <b-dropdown-item >
+                    <b-dropdown-item to="/articles/create">
+                        <b-icon icon="file-plus"></b-icon> 創作文章
+                    </b-dropdown-item>
+                    <b-dropdown-item :to="`/${user.name}`">
                         <b-icon icon="file-earmark-text"></b-icon> 專欄文章
                     </b-dropdown-item>
 

@@ -18,17 +18,48 @@ router.beforeEach((to, from, next) => {
     const app = router.app
     const store = app.$options.store
     const auth = store.state.auth
+    const articleId = to.params.articleId
 
     // 登入的情況下，網址有 auth，會跳轉到首頁
     if (
-        (auth && to.path.indexOf('/auth/') !== -1) ||
-        (!auth && to.meta.auth)
+        (auth && to.path.indexOf('/auth/') !== -1) || 
+        (!auth && to.meta.auth) || 
+        // 有 articleId 且不能找到与其对应的文章时，跳转到首页
+        (articleId && !store.getters.getArticleById(articleId))
     ) {
         next('/')
     } else {
         next()
     }
 })
+
+
+// 註冊全局後置鉤子
+router.afterEach((to, from) => {
+    const app = router.app
+    const store = app.$options.store
+    const showMsg = to.params.showMsg
+  
+    if (showMsg) {
+        if (typeof showMsg === 'string') {
+            app.$bvToast.toast(showMsg, {
+                title:'訊息',
+                toaster: 'b-toaster-bottom-right',
+                autoHideDelay: 5000,
+                appendToast: true
+            })
+        } else {
+            app.$bvToast.toast('操作成功', {
+                title:'訊息',
+                toaster: 'b-toaster-bottom-right',
+                autoHideDelay: 5000,
+                appendToast: true
+            })
+
+        }
+    }
+})
+
 
 
 export default router

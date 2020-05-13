@@ -29,5 +29,7 @@ export default {
     // custom.scss
     @import "~bootstrap/scss/bootstrap";
     @import '~bootstrap-vue/src/index.scss';
-
+    @import 'simplemde/dist/simplemde.min.css';
+    @import 'highlight.js/styles/paraiso-dark.css';
+    
 </style>

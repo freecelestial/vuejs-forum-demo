@@ -1,26 +1,78 @@
 <template>
-    <div class="blog-container">
-        <div class="blog-pages">
-        <div class="col-md-12 panel">
-            <div class="panel-body">
-            <h2 class="text-center">{{ articleId ? '编辑文章' : '创作文章' }}</h2>
-            <hr>
-            <div data-validator-form>
-                <div class="form-group">
-                    <input v-model.trim="title" v-validator:blur.required="{ title: '标题' }" type="text" class="form-control" placeholder="请填写标题" @input="saveTitle"> 
-                </div>
-                <div class="form-group">
-                    <textarea id="editor"></textarea>
-                </div>
-                <br>
-                <div class="form-group">
-                    <button class="btn btn-primary" type="submit" @click="post">发 布</button>
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
-    </div>
+    <b-col>
+        <b-alert
+            :variant="alertType"
+            dismissible
+            fade
+            :show="dismissCountDown"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+        >
+            <p>{{ alertMsg }}</p>
+            <b-progress
+                :variant="alertType"
+                :max="dismissSecs"
+                :value="dismissCountDown"
+                height="4px"
+            ></b-progress>
+        
+        </b-alert>
+        
+        <ValidationObserver ref="observer" v-slot="{ invalid }">
+            <b-form @submit="onSubmit">
+                <b-card-group class="border shadow-sm p-1 mb-5">
+                    <b-card-body>
+                        <b-card class="border-0">
+                            <b-card-text>
+                                <b-card-title>
+                                    <b-icon class="h1" icon="file-plus" variant="primary"></b-icon> 
+                                    創作文章
+                                </b-card-title>
+                                <hr>
+                                <ValidationProvider name="標題" 
+                                        rules="required" v-slot="{ valid,errors }">
+                                    <b-form-group 
+                                        label="標題: " 
+                                        label-for="title"
+                                        description=""
+                                    >
+                                        <b-form-input
+                                            id="title"
+                                            v-model="form.title"
+                                            :state="errors[0] ? false : (valid ? true : null)"
+                                            placeholder=""
+                                            @input="saveTitle"
+                                        ></b-form-input>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+                                <ValidationProvider name="內容" 
+                                        rules="required|max:1200" v-slot="{ valid,errors }">
+                                    <b-form-group 
+                                        label="內容: " 
+                                    >
+                                        <b-form-textarea
+                                            id="content"
+                                            v-model="form.content"
+                                            placeholder=""
+                                        ></b-form-textarea>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">
+                                            {{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                    
+                                </ValidationProvider>
+
+                                <b-button class="mt-4" :disabled="invalid" type="submit" variant="primary" block>
+                                    <b-icon icon="upload"></b-icon> 送 出
+                                </b-button>
+                            </b-card-text>
+                        </b-card>
+                    </b-card-body>
+                </b-card-group>
+            </b-form>
+        </ValidationObserver>
+    </b-col>
 </template>
 
 <script>
@@ -28,37 +80,58 @@ import SimpleMDE from 'simplemde'
 import hljs from 'highlight.js'
 import ls from '@/utils/localStorage'
 
-// 添加全局变量
+// 添加全局變量
 window.hljs = hljs
+
+// 引入表單驗證
+import { ValidationProvider, extend ,ValidationObserver} from 'vee-validate';
+import * as rules from 'vee-validate/dist/rules';
+import { messages } from 'vee-validate/dist/locale/zh_TW.json';
+
+// 可使用所有rules
+Object.keys(rules).forEach(rule => {
+    extend(rule, {
+         ...rules[rule], // copies rule configuration
+         message: messages[rule] // assign message
+    });
+});
+
 
 export default {
     name: 'Create',
     data() {
         return {
-            title: '',
-            content: '',
-            // 临时用它来判断是否还处于当前编辑页面
-            articleId: undefined
+            form:{
+                title: '',
+                content: '',
+            },
+            // 臨時用它來判斷是否還處於當前編輯頁面
+            articleId: undefined,
+            alertShow: null,
+            alertMsg:'',
+            alertType:'',
+            dismissSecs: 5,
+            dismissCountDown: 0,
         }
     },
-    // 進入路由前，设置 articleId
+    // 進入路由前，設置 articleId
     // 此時只能用 vm 不能用 this
     beforeRouteEnter(to, from, next) {
         next(vm => {
             vm.setArticleId(vm.$route.params.articleId)
         })
     },
-    // 在离开路由前，清除記錄資料
+    // 在離開路由前，清除記錄資料
     // 此時已可用 this
     beforeRouteLeave(to, from, next) {
         this.clearData()
         next()
     },
     watch: {
-        // 监听路由参数的变化
-        // 我们通常会在两个路由都渲染相同的组件时监听 '$route'
-        // 这是因为 Vue 会复用组件实例，以导致组件内的部分钩子不再被调用
-        // 例如：当我们从『编辑文章』导航到『创作文章』时 beforeRouteEnter 就不会被调用
+        // 監聽路由參數的變化
+        // 我們通常會在兩個路由都渲染相同的組件時監聽 '$route'
+        // 這是因爲 Vue 會複用組件實例，以導致組件內的部分鉤子不再被調用
+        // 例如：當我們從『編輯文章』導航到『創作文章』時 beforeRouteEnter 就不會被調用
         '$route'(to) {
             this.clearData()
             this.setArticleId(to.params.articleId)
@@ -66,66 +139,79 @@ export default {
     },
     mounted() {
         const simplemde = new SimpleMDE({
-            element: document.querySelector('#editor'),
-            placeholder: '请使用 Markdown 格式书写 ;-)，代码片段黏贴时请注意使用高亮语法。',
+            element: document.querySelector('#content'),
+            placeholder: '請使用 Markdown 語法書寫',
             spellChecker: false,
-            autoDownloadFontAwesome: false,
+            autoDownloadFontAwesome: true,
             autosave: {
                 enabled: true,
-                uniqueId: 'vuejs-essential'
+                uniqueId: 'vuejs-forum-demo'
             },
             renderingConfig: {
-                // 启用代码高亮，需要引入 highlight.js
+                // 啓用代碼高亮，需要引入 highlight.js
                 codeSyntaxHighlighting: true
             }
         })
-        // 监听编辑器的 change 事件
+        // 監聽編輯器的 change 事件
         simplemde.codemirror.on('change', () => {
-            // 将改变后的值赋给文章内容
-            this.content = simplemde.value()
+            // 將改變後的值賦給文章內容
+            this.form.content = simplemde.value()
         })
-        // 将 simplemde 添加到当前实例，以在其他地方调用
+        // 將 simplemde 添加到當前實例，以在其他地方調用
         this.simplemde = simplemde
-        // 初始化标题和内容
-        this.fillContent()
+        // 標題和內容載入原有值
+        this.initContent()
     },
     methods: {
-        // 编辑器只会自动保存文章的内容，我们需要自己保存文章的标题
-        saveTitle() {
-            ls.setItem('smde_title', this.title)
+        showAlert(msg, type = 'success') {
+            this.alertMsg = msg
+            this.alertType = type
+            this.alertShow = false
+            this.$nextTick(() => {
+                this.dismissCountDown = this.dismissSecs
+                document.documentElement.scrollTop = 20
+            })
         },
-        fillContent(articleId) {
+        countDownChanged(dismissCountDown) {
+            this.dismissCountDown = dismissCountDown
+        },
+        // 編輯器只會自動保存文章的內容，文章的標題用@input觸發
+        saveTitle() {
+            ls.setItem('smde_title', this.form.title)
+        },
+        initContent(articleId) {
             const simplemde = this.simplemde
             const smde_title = ls.getItem('smde_title')
 
-            // 有 articleId 时
+            // 有 articleId 時
             if (articleId !== undefined) {
-                // 获取对应文章
+                // 獲取對應文章
                 const article = this.$store.getters.getArticleById(articleId)
 
                 if (article) {
-                    // 获取文章的标题和内容
+                    // 獲取文章的標題和內容
                     const { title, content } = article
 
-                    // 有自动保存的标题时，使用自动保存的标题，否则使用文章的标题
-                    this.title = smde_title || title
+                    // 有自動保存的標題時，使用自動保存的標題，否則使用文章的標題
+                    this.form.title = smde_title || title
 
-                    // 有自动保存的内容时，使用自动保存的内容，否则使用文章的内容
-                    this.content = simplemde.value() || content
+                    // 有自動保存的內容時，使用自動保存的內容，否則使用文章的內容
+                    this.form.content = simplemde.value() || content
 
-                    // 设置编辑器的内容
+                    // 設置編輯器的內容
                     simplemde.value(this.content)
                 }
             } else { 
-                // 没有 articleId 时，使用自动保存的标题和内容
-                this.title = smde_title
-                this.content = simplemde.value()
+                // 沒有 articleId 時，使用自動保存的標題和內容
+                this.form.title = smde_title
+                this.form.content = simplemde.value()
             }
 
         },
-        post() {
-            const title = this.title
-            const content = this.content
+        onSubmit(evt) {
+            evt.preventDefault()
+            const title = this.form.title
+            const content = this.form.content
 
             if (title !== '' && content.trim() !== '') {
                 const article = {
@@ -138,30 +224,34 @@ export default {
             }
         },
         clearData() {
-            this.title = ''
+            this.form.title = ''
             ls.removeItem('smde_title')
             this.simplemde.value('')
             this.simplemde.clearAutosavedValue()
         },
         setArticleId(articleId) {
-            // 获取 localStorage 保存的 articleId，临时用它来判断是否还处于当前编辑页面
+            // 獲取 localStorage 保存的 articleId，臨時用它來判斷是否還處於當前編輯頁面
             const localArticleId = ls.getItem('articleId')
-            // 手动在两个不同的编辑页面之间跳转时（如 /articles/1/edit 和 /articles/2/edit）时
-            // 清空自动保存的文章数据
+            // 手動在兩個不同的編輯頁面之間跳轉時（如 /articles/1/edit 和 /articles/2/edit）時
+            // 清空自動保存的文章數據
             if (articleId !== undefined && !(articleId === localArticleId)) {
                 this.clearData()
             }
 
             this.articleId = articleId
-            this.fillContent(articleId)
+            this.initContent(articleId)
             ls.setItem('articleId', articleId)
         }
+    },
+    components: {
+        ValidationProvider,ValidationObserver
     }
 }
 
 </script>
 
 <style scoped>
-    .blog-container { max-width: 980px; margin: 0 auto; margin-top: 20px;}
-    textarea { height: 200px; }
+    form,h4 { font-weight:700 }
+    .b-icon.bi {vertical-align: middle;}
+
 </style>

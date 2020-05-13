@@ -1,25 +1,25 @@
 import router from '../router'
 
 export const post = ({ commit, state }, { article, articleId }) => {
-    // 从仓库获取所有文章
+    // 從倉庫獲取所有文章
     let articles = state.articles
 
-    // 没有文章时，建一个空数组
+    // 沒有文章時，建一個空數組
     if (!Array.isArray(articles)) articles = []
 
     if (article) {
-        // 因为是单用户，所以指定用户 ID 为 1
+        // 因爲是單用戶，所以指定用戶 ID 爲 1
         const uid = 1
         const { title, content } = article
         // 為每一篇文章加入創建日期
         const date = new Date()
 
-        // 如果没传 articleId，表示新建文章
+        // 如果沒傳 articleId，表示新建文章
         if (articleId === undefined) {
             const lastArticle = articles[articles.length - 1]
 
             if (lastArticle) {
-                // 新的 articleId 是最后一篇文章的 articleId 加 1
+                // 新的 articleId 是最後一篇文章的 articleId 加 1
                 articleId = parseInt(lastArticle.articleId) + 1
             } else {
                 // 若無資料，直接用文章個數加 1
@@ -34,6 +34,7 @@ export const post = ({ commit, state }, { article, articleId }) => {
                 date
             })
         }else{
+            // articleId 若相同，直接修改該文章的標題和內容
             for (let article of articles) {
                 if (parseInt(article.articleId) === parseInt(articleId)) {
                     article.title = title
@@ -45,16 +46,16 @@ export const post = ({ commit, state }, { article, articleId }) => {
         }
 
         commit('UPDATE_ARTICLES', articles)
-        // 附带 articleId 和 showMsg 参数
+        // 附帶 articleId 和 showMsg 參數
         router.push({ name: 'Content', params: { articleId, showMsg: true } })
 
     }else {
 
-        // 遍历所有文章
+        // 遍歷所有文章
         for (let article of articles) {
-            // 找到与 articleId 对应的文章
+            // 找到與 articleId 對應的文章
             if (parseInt(article.articleId) === parseInt(articleId)) {
-                // 删除对应的文章
+                // 刪除對應的文章
                 articles.splice(articles.indexOf(article), 1)
                 break
             }
@@ -62,25 +63,25 @@ export const post = ({ commit, state }, { article, articleId }) => {
         
         // 更新文章列表
         commit('UPDATE_ARTICLES', articles)
-        // 跳转到首页，附带 showMsg 参数，以指示首页显示一个消息提示
-        router.push({ name: 'Home', params: { showMsg: true } })
+        // 跳轉到首頁，附帶 showMsg 參數，以指示首頁顯示一個消息提示
+        router.push({ name: 'Content', params: { showMsg: true } })
     }
 }
 
 
-// 参数 articleId 是文章 ID；isAdd 为 true 时点赞，为 false 时取消赞
+// 參數 articleId 是文章 ID；isAdd 爲 true 時點贊，爲 false 時取消贊
 export const like = ({ commit, state }, { articleId, isAdd }) => {
-    // 仓库的文章
+    // 倉庫的文章
     let articles = state.articles
-    // 点赞用户列表
+    // 點贊用戶列表
     let likeUsers = []
-    // 用户 ID，默认为 1
+    // 用戶 ID，默認爲 1
     const uid = 1
   
     if (!Array.isArray(articles)) articles = []
   
     for (let article of articles) {
-        // 找到对应文章时
+        // 找到對應文章時
         if (parseInt(article.articleId) === parseInt(articleId)) {
             // 取此 article 點贊用戶列表
             likeUsers = Array.isArray(article.likeUsers) ? article.likeUsers : likeUsers
@@ -91,21 +92,21 @@ export const like = ({ commit, state }, { articleId, isAdd }) => {
                 const isAdded = likeUsers.some(likeUser => parseInt(likeUser.uid) === uid)
         
                 if (!isAdded) {
-                    // 在点赞用户列表中加入当前用户
+                    // 在點贊用戶列表中加入當前用戶
                     likeUsers.push({ uid })
                 }
             } else {
                 for (let likeUser of likeUsers) {
-                    // 找到对应点赞用户时
+                    // 找到對應點贊用戶時
                     if (parseInt(likeUser.uid) === uid) {
-                        // 删除点赞用户
+                        // 刪除點贊用戶
                         likeUsers.splice(likeUsers.indexOf(likeUser), 1)
                         break
                     }
                 }
             }
     
-            // 更新文章的点赞用户列表
+            // 更新文章的點贊用戶列表
             article.likeUsers = likeUsers
             break
         }
@@ -114,27 +115,27 @@ export const like = ({ commit, state }, { articleId, isAdd }) => {
     // 提交 UPDATE_ARTICLES 以更新所有文章
     commit('UPDATE_ARTICLES', articles)
     
-    // 返回点赞用户列表
+    // 返回點贊用戶列表
     return likeUsers
 }
 
-// 参数 articleId 是文章 ID；comment 是评论内容；commentId 是评论 ID
+// 參數 articleId 是文章 ID；comment 是評論內容；commentId 是評論 ID
 export const comment = ({ commit, state }, { articleId, comment, commentId }) => {
-    // 仓库的文章
+    // 倉庫的文章
     let articles = state.articles
-    // 评论列表
+    // 評論列表
     let comments = []
 
     if (!Array.isArray(articles)) articles = []
 
     for (let article of articles) {
-        // 找对应文章
+        // 找對應文章
         if (parseInt(article.articleId) === parseInt(articleId)) {
-            // 更新评论列表
+            // 更新評論列表
             comments = Array.isArray(article.comments) ? article.comments : comments
 
             if (comment) {
-                // 获取用户传入的评论内容，设置用户 ID 的默认值为 1
+                // 獲取用戶傳入的評論內容，設置用戶 ID 的默認值爲 1
                 const { uid = 1, content } = comment
                 const date = new Date()
 
@@ -148,7 +149,7 @@ export const comment = ({ commit, state }, { articleId, comment, commentId }) =>
                         commentId = comments.length + 1
                     }
 
-                    // 在评论列表中加入当前评论
+                    // 在評論列表中加入當前評論
                     comments.push({
                         uid,
                         commentId,
@@ -157,20 +158,20 @@ export const comment = ({ commit, state }, { articleId, comment, commentId }) =>
                     })
                 }else {
                     for (let comment of comments) {
-                        // 找到对应的评论时
+                        // 找到對應的評論時
                         if (parseInt(comment.commentId) === parseInt(commentId)) {
-                            // 更新评论的内容
+                            // 更新評論的內容
                             comment.content = content
                             break
                         }
                     }
                 }
             } else {
-                // 删除评论的时候不会有 comment 传参
+                // 刪除評論的時候不會有 comment 傳參
                 for (let comment of comments) {
-                    // 找到对应的评论时
+                    // 找到對應的評論時
                     if (parseInt(comment.commentId) === parseInt(commentId)) {
-                        // 删除这条评论
+                        // 刪除這條評論
                         comments.splice(comments.indexOf(comment), 1)
                         break
                     }
@@ -178,7 +179,7 @@ export const comment = ({ commit, state }, { articleId, comment, commentId }) =>
             }
             
 
-            // 更新文章的评论列表
+            // 更新文章的評論列表
             article.comments = comments
             break
         }
@@ -186,6 +187,6 @@ export const comment = ({ commit, state }, { articleId, comment, commentId }) =>
 
     // 提交 UPDATE_ARTICLES 以更新所有文章
     commit('UPDATE_ARTICLES', articles)
-    // 返回评论列表
+    // 返回評論列表
     return comments
 }
