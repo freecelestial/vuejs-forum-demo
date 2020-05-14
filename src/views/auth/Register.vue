@@ -20,7 +20,7 @@
                             <b-form-group 
                                 label="會員名稱: " 
                                 label-for="username"
-                                description="測試環境僅支援單一會員註冊，即新註冊者會覆蓋舊註冊者。"
+                                description="測試環境僅支援單一會員註冊，即新註冊資料會覆蓋舊註冊資料。"
                             >
                                 <b-form-input
                                 id="username"

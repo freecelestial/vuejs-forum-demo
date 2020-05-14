@@ -174,9 +174,9 @@ export default {
                 element: document.querySelector('#editor'),
                 placeholder: '請使用 Markdown 語法書寫',
                 spellChecker: false,
-                autoDownloadFontAwesome: true,
-                // 顯示工具欄
-                toolbar: true,
+                autoDownloadFontAwesome: false,
+                // 顯示工具欄 (不能用 true)
+                // toolbar: false,
                 // 不顯示狀態欄
                 status: false,
                 renderingConfig: {
@@ -406,7 +406,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
     .CodeMirror,.CodeMirror-scroll {
         min-height: 100px;
     }
