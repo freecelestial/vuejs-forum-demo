@@ -29,7 +29,10 @@ export default {
     // custom.scss
     @import "~bootstrap/scss/bootstrap";
     @import '~bootstrap-vue/src/index.scss';
+    $fa-font-path: "~font-awesome/fonts/";
+    @import "~font-awesome/scss/font-awesome";
+    
     @import 'simplemde/dist/simplemde.min.css';
     @import 'highlight.js/styles/paraiso-dark.css';
-    
+
 </style>

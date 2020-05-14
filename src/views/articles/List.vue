@@ -1,30 +1,35 @@
 <template>
-    <div class="col-md-9 left-col pull-right">
-        <div class="panel article-body article-index">
-            <div class="panel-body">
-                <h1 class="all-articles">
-                    專欄文章
-                    <router-link v-if="auth" to="/articles/create" class="btn btn-primary pull-right">
-                        <i class="fa fa-paint-brush"></i>
-                        創作文章
-                    </router-link>
-                </h1>
+    <b-col>
+        <b-card-group>
+            <b-card  class="border shadow-sm p-3 mb-5">
+                <b-card-title>
+                    <h3 class="mb-3 font-weight-bolder">專欄文章</h3>
+                </b-card-title>
 
-                <ul class="list-group">
-                    <!-- 使用 v-for 指令渲染文章列表 -->
-                    <li v-for="article in articles" class="list-group-item" :key="article.articleId">
-                        <img :src="article.uavatar" class="avatar avatar-small">
-                        <router-link :to="`/articles/${article.articleId}/content`" class="title">
-                            {{ article.title }}
-                        </router-link>
-                        <span class="meta pull-right">
-                            <span class="timeago">{{ article.date | moment('from') }}</span>
-                        </span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+                <b-list-group>
+                    <b-list-group-item v-for="article in articles" :key="article.articleId"
+                        class="flex-column align-items-start border-top-0 border-left-0 
+                        border-right-0">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-0">
+                                <b-avatar  size="sm" variant="light" :src="article.uavatar"></b-avatar> 
+                                <router-link :to="`/articles/${article.articleId}/content`" class="title">
+                                    {{ article.title }}
+                                </router-link>
+                            </h5>
+                            <small>{{ article.date | moment('from') }}</small>
+                        </div>
+                    </b-list-group-item>
+
+
+                </b-list-group>
+                    <div class="mt-5">
+                        <b-pagination v-model="currentPage" :total-rows="rows" align="center"></b-pagination>
+                    </div>
+                
+            </b-card>
+        </b-card-group>
+    </b-col>
 </template>
 
 <script>
@@ -35,7 +40,9 @@ export default {
     name: 'List',
     data() {
         return {
-            articles: [] // 对应用户文章
+            articles: [],
+            rows: 100,
+            currentPage: 1
         }
     },
     computed: {
@@ -46,7 +53,7 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // 确认渲染该组件的对应路由时，获取对应用户文章
+            // 傳入使用者資料物件，以獲取使用者文章
             vm.articles = vm.$store.getters.getArticlesByUid(null, to.params.user)
         })
     }
@@ -54,5 +61,5 @@ export default {
 </script>
 
 <style scoped>
-
+    nav a img{width: 30px;height: 30px;}
 </style>

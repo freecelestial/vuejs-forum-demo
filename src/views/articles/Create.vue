@@ -142,7 +142,7 @@ export default {
             element: document.querySelector('#content'),
             placeholder: '請使用 Markdown 語法書寫',
             spellChecker: false,
-            autoDownloadFontAwesome: true,
+            autoDownloadFontAwesome: false,
             autosave: {
                 enabled: true,
                 uniqueId: 'vuejs-forum-demo'
@@ -199,7 +199,7 @@ export default {
                     this.form.content = simplemde.value() || content
 
                     // 設置編輯器的內容
-                    simplemde.value(this.content)
+                    simplemde.value(this.form.content)
                 }
             } else { 
                 // 沒有 articleId 時，使用自動保存的標題和內容

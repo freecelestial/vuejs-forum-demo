@@ -49,20 +49,6 @@ export default [
         ]
     },
     {
-        path: '/articles/create',
-        name: 'Create',
-        component: () => import('@/views/articles/Create'),
-        meta: { auth: true }
-    },
-    {
-        // 冒號開頭，代表的是該項參數是動態的
-        path: '/articles/:articleId/edit',
-        name: 'Edit',
-        // 跟 Create 一樣的組件頁面
-        component: () => import('@/views/articles/Create'),
-        meta: { auth: true }
-    },
-    {
         path: '/search',
         name: 'Search',
         component: () => import('@/views/Search')
@@ -78,6 +64,19 @@ export default [
                 path: '',
                 name: 'Column',
                 component: () => import('@/views/articles/List.vue')
+            },
+            {
+                path: '/articles/create',
+                name: 'Create',
+                component: () => import('@/views/articles/Create.vue'),
+                meta: { auth: true }
+            },
+            {
+                path: '/articles/:articleId/edit',
+                name: 'Edit',
+                // 跟 Create 一樣的組件頁面
+                component: () => import('@/views/articles/Create.vue'),
+                meta: { auth: true }
             },
             {
                 path: '/articles/:articleId/content',

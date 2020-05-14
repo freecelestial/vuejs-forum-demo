@@ -28,11 +28,8 @@
 
                 <b-nav-item-dropdown v-if=" user && auth " right>
                     <template v-slot:button-content>
-                        <span v-if="user">
-                            <b-img v-if="user.avatar" :src="user.avatar" 
-                            rounded="circle" alt="User Image"></b-img>
-                            <span v-if="user.name">{{ user.name }}</span>
-                        </span>
+                        <b-avatar variant="light" v-if="user.avatar" :src="user.avatar" alt="avatar"></b-avatar>
+                        <span v-if="user.name">{{ user.name }}</span>
                     </template>
                     <b-dropdown-item :to="`/users/${id}/edit`">
                         <b-icon icon="person-lines-fill"></b-icon> 個人資料

@@ -64,7 +64,7 @@ export const post = ({ commit, state }, { article, articleId }) => {
         // 更新文章列表
         commit('UPDATE_ARTICLES', articles)
         // 跳轉到首頁，附帶 showMsg 參數，以指示首頁顯示一個消息提示
-        router.push({ name: 'Content', params: { showMsg: true } })
+        router.push({ name: 'Column', params: { user:state.user.name,showMsg: true } })
     }
 }
 

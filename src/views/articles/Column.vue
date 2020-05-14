@@ -2,24 +2,31 @@
     <b-row  align-h="center">
         <b-col md="3">
             <b-card class="shadow-sm p-1 mb-5 "
-                :img-src="userAvatar"
+                :img-src="user.avatar"
                 img-alt="Avatar"
                 img-top
+                rounded="circle" 
             >
                 <b-card-body>
-                    <b-card-title class="text-center">{{ userName }} 的專欄</b-card-title>
+                    <b-card-title class="text-center">{{ user.name }} 的專欄</b-card-title>
                 </b-card-body>
 
                 <b-card-body>
-                    <b-button :to="`/${ userName }`" variant="outline-success" block>
+                    <b-button v-if="buttonListShow" 
+                        :to="`/${ user.name }`" variant="outline-success" block>
                         <b-icon icon="file-earmark-text"></b-icon>
                         專欄文章 ( {{ articleNum }} )
+                    </b-button>
+                    <b-button v-if="buttonCreateShow" to="/articles/create" 
+                    variant="outline-success" block>
+                        <b-icon icon="file-plus"></b-icon>
+                        創作文章
                     </b-button>
                 </b-card-body>
 
             </b-card>
         </b-col>
-        <b-col md="7">
+        <b-col md="9">
             <router-view/>
         </b-col>
     </b-row>
@@ -34,9 +41,11 @@ export default {
     name: 'Column',
     data() {
         return {
-            userName: '', //  对应用户姓名
-            userAvatar: '', //  对应用户头像
-            articles: [] //  对应用户文章
+            userName: '',
+            userAvatar: '',
+            articles: [],
+            buttonCreateShow: false,
+            buttonListShow: false,
         }
     },
     computed: {
@@ -49,13 +58,13 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // 确认渲染该组件的对应路由时，通过 to.params 参数设置用户和文章数据
+            // 通過 to.params 取得由 action 導向的參數
             vm.setDataByParams(to.params)
         })
     },
     watch: {
         '$route'(to) {
-            // 在子页面之间相互切换时，通过 to.params 参数设置用户和文章数据
+            // 在子頁面之間相互切換時，通過 to.params 參數設置用戶和文章數據
             this.setDataByParams(to.params)
         }
     },
@@ -71,7 +80,11 @@ export default {
                 this.userName = article.uname
                 this.userAvatar = article.uavatar
                 this.articles = this.$store.getters.getArticlesByUid(null, article.uname)
-                
+
+                // 切換顯示按鈕
+                this.buttonCreateShow = true
+                this.buttonListShow = true
+
             } else if (user) {
                 // 存在 user 参数时，使用路由的 user 获取对应用户文章
                 const articles = this.$store.getters.getArticlesByUid(null, user)
@@ -87,6 +100,15 @@ export default {
                 }
 
                 this.articles = articles
+
+                // 切換顯示按鈕
+                this.buttonCreateShow = true
+                this.buttonListShow = false
+            }else{
+                // 切換顯示按鈕
+                this.buttonCreateShow = false
+                this.buttonListShow = true
+
             }
         }
     }

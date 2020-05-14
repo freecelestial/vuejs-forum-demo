@@ -1,54 +1,77 @@
 <template>
     <b-col>
-        <b-alert
-            :variant="alertType"
-            dismissible
-            fade
-            :show="dismissCountDown"
-            @dismissed="dismissCountDown=0"
-            @dismiss-count-down="countDownChanged"
-        >
-            <p>{{ alertMsg }}</p>
-            <b-progress
-                :variant="alertType"
-                :max="dismissSecs"
-                :value="dismissCountDown"
-                height="4px"
-            ></b-progress>
-        
-        </b-alert>
-        
         <ValidationObserver ref="observer" v-slot="{ invalid }">
-            <b-form>
-                <b-card-group class="border shadow-sm p-1 mb-5">
-                    <b-card-body>
-                        <b-card class="border-0">
+            <b-card-group class="border shadow p-1 mb-5">
+                    <b-card class="border-0 overflow-auto">
+                        <b-card-body>
+                            <b-card-title class="text-center">
+                                {{ form.title }}
+                            </b-card-title>
+                            <b-card-sub-title class="py-3 text-center">
+                                <abbr><b-icon icon="clock-history"></b-icon> 
+                                {{ date | moment('from') }}</abbr>
+                            </b-card-sub-title>
+                            <b-card-text class="py-3" v-html="form.content"></b-card-text>
+
                             <b-card-text>
-                                <b-card-title class="text-center">
-                                    {{ form.title}}
-                                </b-card-title>
-                                <b-card-sub-title class="py-3 text-center">
-                                    <abbr><b-icon icon="clock-history"></b-icon> 
-                                    {{ date | moment('from') }}</abbr>
-                                </b-card-sub-title>
-                                <b-card-text class="py-3">
-                                    Some quick example text to build on the card title and make up the bulk of the card's content.
-                                </b-card-text>
-                                <hr>
-                                
-                                <b-button class="mt-4" :disabled="invalid" type="submit" variant="primary" block>
-                                    <b-icon icon="upload"></b-icon> 送 出
-                                </b-button>
-
-
+                                <!-- 編輯刪除連結 -->
+                                <a @click="editArticle" id="pencil" href="javascript:;">
+                                    <b-icon class="h4" icon="pencil"></b-icon>
+                                </a>
+                                <a @click="deleteArticle" id="trash" href="javascript:;" >
+                                    <b-icon class="h4" icon="trash"></b-icon>
+                                </a>
+                                <b-tooltip target="pencil" placement="topleft" variant="info">編輯</b-tooltip>
+                                <b-tooltip target="trash" placement="topright" variant="danger">刪除</b-tooltip>
                             </b-card-text>
-                        </b-card>
-                    </b-card-body>
-                </b-card-group>
-            </b-form>
+                        </b-card-body>
+
+                        <hr>
+                        <b-card-body>
+                            <b-form @submit="onSubmit">
+                                <ValidationProvider name="評論" 
+                                        rules="required|max:300" v-slot="{ valid,errors }">
+                                    <b-form-group 
+                                        label="評論: " 
+                                    >
+                                        <b-form-textarea
+                                            v-if="auth" 
+                                            id="editor" 
+                                            placeholder="" 
+                                        ></b-form-textarea>
+
+                                        <b-form-textarea
+                                            v-else 
+                                            disabled
+                                            placeholder="登入後才可評論" 
+                                        ></b-form-textarea>
+                                        <b-form-invalid-feedback id="inputLiveFeedback">
+                                            {{ errors[0] }}</b-form-invalid-feedback>
+
+                                    </b-form-group>
+
+                                    <!-- commentHtml，這裡使用 v-html 指令同步输出 -->
+                                    <div v-show="commentHtml" id="preview-box" 
+                                    class="box preview markdown-body" v-html="commentHtml"></div>
+
+
+                                    <b-button class="mt-4 text-center" :disabled="invalid" type="submit" variant="primary">
+                                        <b-icon icon="upload"></b-icon> 送 出
+                                    </b-button>
+                                </ValidationProvider>
+                            </b-form>
+                        </b-card-body>
+
+
+
+
+                    </b-card>
+            </b-card-group>
+            
         </ValidationObserver>
     </b-col>
 </template>
+
 <script>
 import SimpleMDE from 'simplemde'
 import hljs from 'highlight.js'
@@ -80,8 +103,8 @@ export default {
     data() {
         return {
             form:{
-                title: '', // 文章標題
-                content: '', // 文章內容
+                title: '',
+                content: ''
             },
             articleId: undefined,
             alertShow: null,
@@ -106,12 +129,13 @@ export default {
         ])
     },
     created() {
-        // 從當前路由對象獲取參數 articleId
+        // 從當前路由參數獲取 articleId，並取出文章
         const articleId = this.$route.params.articleId
         // 從 getArticleById 取指定 ID 的文章
         const article = this.$store.getters.getArticleById(articleId)
 
         if (article) {
+
             let { uid, title, content, date, likeUsers, comments } = article
 
             this.uid = uid
@@ -141,7 +165,7 @@ export default {
         this.articleId = articleId
     },
     mounted() {
-        // 已登錄時，纔開始創建
+        // 若已登錄，載入編輯器
         if (this.auth) {
             // 自動高亮編輯器的內容
             window.hljs = hljs
@@ -151,8 +175,8 @@ export default {
                 placeholder: '請使用 Markdown 語法書寫',
                 spellChecker: false,
                 autoDownloadFontAwesome: true,
-                // 不顯示工具欄
-                toolbar: false,
+                // 顯示工具欄
+                toolbar: true,
                 // 不顯示狀態欄
                 status: false,
                 renderingConfig: {
@@ -185,19 +209,8 @@ export default {
         }
     },
     methods: {
-        showAlert(msg, type = 'success') {
-            this.alertMsg = msg
-            this.alertType = type
-            this.alertShow = false
-            this.$nextTick(() => {
-                this.dismissCountDown = this.dismissSecs
-                document.documentElement.scrollTop = 20
-            })
-        },
-        countDownChanged(dismissCountDown) {
-            this.dismissCountDown = dismissCountDown
-        },
         editArticle() {
+            // 導向編輯頁面
             this.$router.push({ name: 'Edit', params: { articleId: this.articleId } })
         },
         deleteArticle() {
@@ -260,7 +273,8 @@ export default {
                 }
             }
         },
-        comment() {
+        onSubmit(evt) {
+            evt.preventDefault()
             // 編輯器的內容不爲空時
             if (this.commentMarkdown && this.commentMarkdown.trim() !== '') {
                 // 分發 comment 事件以提交評論
@@ -392,7 +406,8 @@ export default {
 }
 </script>
 
-<style scoped>
-    .fade-enter-active, .fade-leave-active { transition: opacity .5s;}
-    .fade-enter, .fade-leave-to { opacity: 0;}
+<style lang="scss" scoped>
+    .CodeMirror,.CodeMirror-scroll {
+        min-height: 100px;
+    }
 </style>
