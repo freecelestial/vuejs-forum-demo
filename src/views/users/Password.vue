@@ -20,8 +20,8 @@
         
         <b-breadcrumb class="bg-white">
             <b-breadcrumb-item to="/">
-            <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
-             Home
+            <b-icon icon="house-fill" variant="dark" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
+             <span class="text-dark"> Home</span>
             </b-breadcrumb-item>
             <b-breadcrumb-item active>個人資料 - 修改密碼</b-breadcrumb-item>
         </b-breadcrumb>

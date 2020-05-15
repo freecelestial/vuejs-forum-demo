@@ -1,8 +1,27 @@
 <template>
     <b-col>
+        <b-alert
+            :variant="alertType"
+            dismissible
+            fade
+            :show="dismissCountDown"
+            @dismissed="dismissCountDown=0"
+            @dismiss-count-down="countDownChanged"
+        >
+            <p>{{ alertMsg }}</p>
+            <b-progress
+                :variant="alertType"
+                :max="dismissSecs"
+                :value="dismissCountDown"
+                height="4px"
+            ></b-progress>
+        
+        </b-alert>
+
         <b-breadcrumb class="bg-white">
             <b-breadcrumb-item to="/">
-            <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
+            <b-icon icon="house-fill" variant="success" 
+            scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
              Home
             </b-breadcrumb-item>
             <b-breadcrumb-item active>文章內容</b-breadcrumb-item>
@@ -34,7 +53,21 @@
                             </b-card-text>
                         </b-card-body>
 
-                        <hr>
+                        <b-card
+                            tag="article"
+                            class="p-2 my-2 text-center "
+                        >
+                            <b-button @click="like" href="javascript:;" variant="info">
+                                <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已赞' : '点赞' }}
+                            </b-button>
+                            <b-card-text>
+                                <div v-if="!likeUsers.length" class="vote-hint">成为第一个点讚的人吧 !</div>
+                            </b-card-text>
+
+                            
+                        </b-card>
+
+
                         <b-card-body>
                             <b-form @submit="onSubmit">
                                 <ValidationProvider name="評論" 
@@ -119,8 +152,8 @@ export default {
             dismissCountDown: 0,
             date: '', // 文章創建時間
             uid: 1, // 用戶 ID
-            likeUsers: [], // 點贊用戶列表
-            likeClass: '', // 點贊樣式
+            likeUsers: [], // 點讚用戶列表
+            likeClass: '', // 點讚樣式
             showQrcode: false, // 是否顯示打賞彈窗
             commentHtml: '', // 評論 HTML
             comments: [], // 評論列表
@@ -153,7 +186,7 @@ export default {
             // 更新實例的 likeUsers
             this.likeUsers = likeUsers || []
             // 更新 likeClass，點贊用戶列表包含當前用戶時，賦值爲 active，表示已贊
-            this.likeClass = this.likeUsers.some(likeUser => likeUser.uid === 1) ? 'active' : ''
+            this.likeClass = this.likeUsers.some(likeUser => likeUser.uid === this.uid) ? 'active' : ''
 
             // 渲染文章的 comments
             this.renderComments(comments)
@@ -214,6 +247,18 @@ export default {
         }
     },
     methods: {
+        showAlert(msg, type = 'success') {
+            this.alertMsg = msg
+            this.alertType = type
+            this.alertShow = false
+            this.$nextTick(() => {
+                this.dismissCountDown = this.dismissSecs
+                document.documentElement.scrollTop = 20
+            })
+        },
+        countDownChanged(dismissCountDown) {
+            this.dismissCountDown = dismissCountDown
+        },
         editArticle() {
             // 導向編輯頁面
             this.$router.push({ name: 'Edit', params: { articleId: this.articleId } })
@@ -242,37 +287,37 @@ export default {
             })
         },
         like(evt) {
-            // 未登錄時，提示登錄
+            evt.preventDefault()
             if (!this.auth) {
-                this.$swal({
-                    text: '需要登錄以後才能執行此操作。',
-                    confirmButtonText: '前往登錄'
-                }).then((res) => {
-                    if (res.value) {
-                        this.$router.push('/auth/login')
-                    }
-                })
+                this.showAlert('登入後才能執行此操作','warning')
+
             } else {
                 const target = evt.currentTarget
-                // 點贊按鈕是否含有 active 類，我們用它來判斷是否已贊
+                // 判斷是否已 like
                 const active = target.classList.contains('active')
                 const articleId = this.articleId
 
                 if (active) {
-                    // 清除已贊樣式
+                    // 取消點讚
+                    // 清除原 like 樣式
                     this.likeClass = ''
-                    // 分發 like 事件取消贊，更新實例的 likeUsers 爲返回的值
-                    // 調用 store.dispatch 默認返回一個 Promise 對象，表示一個異步操作的最終狀態及其返回的值
+                    // 分發 like 事件取消讚，更新實例的 likeUsers 爲返回的值
+                    // 調用 store.dispatch 默認返回一個 Promise 對象，
+                    // 表示一個異步操作的最終狀態及其返回的值
                     // 此處返回的是 likeUsers
                     this.$store.dispatch('like', { articleId }).then((likeUsers) => {
                         // 使用帶用戶信息的點贊用戶
+                        // this.likeUsers = likeUsers
+                        // 重新取值
                         this.likeUsers = this.recompute('likeUsers')
                     })
                 } else {
-                    // 添加已贊樣式
+                    // 添加已讚樣式
                     this.likeClass = 'active animated rubberBand'
-                    // 分發 like 事件，傳入 isAdd 參數點贊，更新實例的 likeUsers 爲返回的值
+                    // 分發 like 事件，傳入 isAdd:true 表示加讚
                     this.$store.dispatch('like', { articleId, isAdd: true }).then((likeUsers) => {
+                        // this.likeUsers = likeUsers
+                        // 重新取值
                         this.likeUsers = this.recompute('likeUsers')
                     })
                 }

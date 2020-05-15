@@ -1,7 +1,7 @@
 <template>
     <b-row  align-h="center">
-        <b-col md="3">
-            <b-card class="shadow-sm p-1 mb-5 "
+        <b-col md="3" class="d-none d-lg-block">
+            <b-card class="shadow-sm p-1 mb-5"
                 :img-src="user.avatar"
                 img-alt="Avatar"
                 img-top
@@ -50,14 +50,6 @@ export default {
             return this.articles.length
         }
     },
-    beforeRouteEnter(to, from, next) {
-        next(vm => {
-            // content 頁面移到最上方
-            if(vm.$route.params.articleId) {
-                document.documentElement.scrollTop = 20
-            }
-        })
-    },
     watch: {
         '$route'(to) {
             // 在子頁面之間相互切換時，通過 to.params 參數設置用戶和文章數據
@@ -103,6 +95,8 @@ export default {
                 this.buttonListShow = true
 
             }
+            
+            document.documentElement.scrollTop = 20
         }
     }
 }

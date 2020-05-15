@@ -14,15 +14,16 @@
 
             <!-- 右側 -->
             <b-navbar-nav class="ml-auto">
-                <b-nav-form class="mr-md-4" >
-                    <b-input-group size="sm" class="mb-2">
+
+                <b-nav-form inline>
+                    <b-input-group>
                         <b-input-group-prepend is-text>
                             <b-icon icon="search"></b-icon>
                         </b-input-group-prepend>
-                        <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
-
-                        <b-button size="sm" class="my-2 my-sm-0" 
-                        variant="outline-success" type="submit">Search</b-button>
+                        <b-form-input class="mr-1" 
+                        type="search" placeholder="搜尋文章"></b-form-input>
+                        <b-button class="my-0" type="submit" 
+                        variant="outline-success">查詢</b-button>
                     </b-input-group>
                 </b-nav-form>
 
@@ -31,7 +32,7 @@
                         <b-avatar variant="light" v-if="user.avatar" :src="user.avatar" alt="avatar"></b-avatar>
                         <span v-if="user.name">{{ user.name }}</span>
                     </template>
-                    <b-dropdown-item :to="`/users/${id}/edit`">
+                    <b-dropdown-item :to="`/users/${uid}/edit`">
                         <b-icon icon="person-lines-fill"></b-icon> 個人資料
                     </b-dropdown-item>
                     <b-dropdown-item to="/articles/create">
@@ -78,7 +79,7 @@ export default {
     },
     data() {
         return {
-            id: 1,
+            uid: 1,
             boxShow: false,
         }
     },

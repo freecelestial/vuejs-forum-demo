@@ -27,6 +27,8 @@ export default {
 
 <style lang="scss">
     // custom.scss
+    @import "./styles/main";
+    
     @import "~bootstrap/scss/bootstrap";
     @import '~bootstrap-vue/src/index.scss';
     $fa-font-path: "~font-awesome/fonts/";
