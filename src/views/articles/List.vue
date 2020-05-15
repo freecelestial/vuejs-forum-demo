@@ -1,9 +1,19 @@
 <template>
     <b-col>
+        <b-breadcrumb class="bg-white">
+            <b-breadcrumb-item to="/">
+            <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
+             Home
+            </b-breadcrumb-item>
+            <b-breadcrumb-item active>文章列表</b-breadcrumb-item>
+        </b-breadcrumb>
+
         <b-card-group>
             <b-card  class="border shadow-sm p-3 mb-5">
                 <b-card-title>
-                    <h3 class="mb-3 font-weight-bolder">專欄文章</h3>
+                    <h3 class="mb-3 font-weight-bolder">
+                        <b-icon class="h1" icon="file-earmark-text" variant="primary"></b-icon>
+                        文章列表</h3>
                 </b-card-title>
 
                 <b-list-group>
@@ -61,5 +71,7 @@ export default {
 </script>
 
 <style scoped>
-    nav a img{width: 30px;height: 30px;}
+    form,h4 { font-weight:700 }
+    .b-icon.bi {vertical-align: middle;}
+
 </style>

@@ -1,23 +1,13 @@
 <template>
     <b-col>
-        <b-alert
-            :variant="alertType"
-            dismissible
-            fade
-            :show="dismissCountDown"
-            @dismissed="dismissCountDown=0"
-            @dismiss-count-down="countDownChanged"
-        >
-            <p>{{ alertMsg }}</p>
-            <b-progress
-                :variant="alertType"
-                :max="dismissSecs"
-                :value="dismissCountDown"
-                height="4px"
-            ></b-progress>
-        
-        </b-alert>
-        
+        <b-breadcrumb class="bg-white">
+            <b-breadcrumb-item to="/">
+            <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
+             Home
+            </b-breadcrumb-item>
+            <b-breadcrumb-item active>創作文章</b-breadcrumb-item>
+        </b-breadcrumb>
+
         <ValidationObserver ref="observer" v-slot="{ invalid }">
             <b-form @submit="onSubmit">
                 <b-card-group class="border shadow-sm p-1 mb-5">
@@ -107,11 +97,6 @@ export default {
             },
             // 臨時用它來判斷是否還處於當前編輯頁面
             articleId: undefined,
-            alertShow: null,
-            alertMsg:'',
-            alertType:'',
-            dismissSecs: 5,
-            dismissCountDown: 0,
         }
     },
     // 進入路由前，設置 articleId
@@ -163,18 +148,6 @@ export default {
         this.initContent()
     },
     methods: {
-        showAlert(msg, type = 'success') {
-            this.alertMsg = msg
-            this.alertType = type
-            this.alertShow = false
-            this.$nextTick(() => {
-                this.dismissCountDown = this.dismissSecs
-                document.documentElement.scrollTop = 20
-            })
-        },
-        countDownChanged(dismissCountDown) {
-            this.dismissCountDown = dismissCountDown
-        },
         // 編輯器只會自動保存文章的內容，文章的標題用@input觸發
         saveTitle() {
             ls.setItem('smde_title', this.form.title)

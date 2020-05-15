@@ -15,12 +15,7 @@
                     <b-button v-if="buttonListShow" 
                         :to="`/${ user.name }`" variant="outline-success" block>
                         <b-icon icon="file-earmark-text"></b-icon>
-                        專欄文章 ( {{ articleNum }} )
-                    </b-button>
-                    <b-button v-if="buttonCreateShow" to="/articles/create" 
-                    variant="outline-success" block>
-                        <b-icon icon="file-plus"></b-icon>
-                        創作文章
+                        文章列表 
                     </b-button>
                 </b-card-body>
 
@@ -44,8 +39,7 @@ export default {
             userName: '',
             userAvatar: '',
             articles: [],
-            buttonCreateShow: false,
-            buttonListShow: false,
+            buttonListShow: true,
         }
     },
     computed: {
@@ -58,8 +52,10 @@ export default {
     },
     beforeRouteEnter(to, from, next) {
         next(vm => {
-            // 通過 to.params 取得由 action 導向的參數
-            vm.setDataByParams(to.params)
+            // content 頁面移到最上方
+            if(vm.$route.params.articleId) {
+                document.documentElement.scrollTop = 20
+            }
         })
     },
     watch: {
@@ -82,7 +78,6 @@ export default {
                 this.articles = this.$store.getters.getArticlesByUid(null, article.uname)
 
                 // 切換顯示按鈕
-                this.buttonCreateShow = true
                 this.buttonListShow = true
 
             } else if (user) {
@@ -102,11 +97,9 @@ export default {
                 this.articles = articles
 
                 // 切換顯示按鈕
-                this.buttonCreateShow = true
                 this.buttonListShow = false
             }else{
                 // 切換顯示按鈕
-                this.buttonCreateShow = false
                 this.buttonListShow = true
 
             }

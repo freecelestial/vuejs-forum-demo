@@ -17,7 +17,15 @@
             ></b-progress>
         
         </b-alert>
-        
+
+        <b-breadcrumb class="bg-white">
+            <b-breadcrumb-item to="/">
+            <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
+             Home
+            </b-breadcrumb-item>
+            <b-breadcrumb-item active>個人資料 - 基本資料</b-breadcrumb-item>
+        </b-breadcrumb>
+
         <ValidationObserver ref="observer" v-slot="{ invalid }">
             <b-form @submit="onSubmit">
                 <b-card-group class="border shadow-sm p-1 mb-5">

@@ -38,7 +38,7 @@
                         <b-icon icon="file-plus"></b-icon> 創作文章
                     </b-dropdown-item>
                     <b-dropdown-item :to="`/${user.name}`">
-                        <b-icon icon="file-earmark-text"></b-icon> 專欄文章
+                        <b-icon icon="file-earmark-text"></b-icon> 文章列表
                     </b-dropdown-item>
 
                     <b-dropdown-item @click="logout">
@@ -113,7 +113,9 @@ export default {
 </script>
 
 <style scoped>
-    nav { border-top: 4px solid #4fc08d; }
-    nav a img{width: 30px;height: 30px;}
-
+    nav { border-top: 2px solid #4fc08d; }
+    nav a img{width: 35px;height: 35px;}
+    .navbar {
+        padding: .3rem 1rem;
+    }
 </style>

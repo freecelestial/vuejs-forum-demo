@@ -1,5 +1,13 @@
 <template>
     <b-col>
+        <b-breadcrumb class="bg-white">
+            <b-breadcrumb-item to="/">
+            <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
+             Home
+            </b-breadcrumb-item>
+            <b-breadcrumb-item active>文章內容</b-breadcrumb-item>
+        </b-breadcrumb>
+
         <ValidationObserver ref="observer" v-slot="{ invalid }">
             <b-card-group class="border shadow p-1 mb-5">
                     <b-card class="border-0 overflow-auto">
@@ -55,15 +63,12 @@
                                     class="box preview markdown-body" v-html="commentHtml"></div>
 
 
-                                    <b-button class="mt-4 text-center" :disabled="invalid" type="submit" variant="primary">
+                                    <b-button class="mt-3 text-center" :disabled="invalid" type="submit" variant="primary">
                                         <b-icon icon="upload"></b-icon> 送 出
                                     </b-button>
                                 </ValidationProvider>
                             </b-form>
                         </b-card-body>
-
-
-
 
                     </b-card>
             </b-card-group>
@@ -298,9 +303,6 @@ export default {
                         if (lastComment) lastComment.scrollIntoView(true)
                     })
                 }
-
-
-
 
             }
         },
