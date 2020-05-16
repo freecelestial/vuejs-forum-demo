@@ -53,6 +53,7 @@
                             </b-card-text>
                         </b-card-body>
 
+                        <!-- 點讚區 -->
                         <b-card
                             tag="article"
                             class="p-2 my-2 text-center "
@@ -74,7 +75,7 @@
                                 <div>
                                     <span v-for="likeUser in likeUsers" :key="likeUser.uname">
                                         <!-- animated 是固定的，swing 是動畫名稱 -->
-                                        <router-link :to="`/${likeUser.uname}`"  :class="{ 'animated swing' : likeUser.uid === uid }">
+                                        <router-link :to="`/${likeUser.uname}`"  :class="{ 'animated swing' : likeUser.uid == uid }">
                                             <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
                                             ></b-avatar>
                                         </router-link>
@@ -364,7 +365,6 @@ export default {
             })
         },
         like(evt) {
-            evt.preventDefault()
             if (!this.auth) {
                 this.showAlert('登入後才能執行此操作','warning')
 
@@ -398,6 +398,7 @@ export default {
                         this.likeUsers = this.recompute('likeUsers')
                     })
                 }
+
             }
         },
         comment() {
@@ -530,6 +531,7 @@ export default {
             const articleId = this.$route.params.articleId
             // 這裏的文章是基於 getters.computedArticles 的，所以包含用戶信息了
             const article = this.$store.getters.getArticleById(articleId)
+
             let arr
 
             if (article) {

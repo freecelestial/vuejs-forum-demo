@@ -22,14 +22,15 @@
                         </b-input-group-prepend>
                         <b-form-input class="mr-1" 
                         type="search" placeholder="搜尋文章"></b-form-input>
-                        <b-button class="my-0" type="submit" 
+                        <b-button class="my-0 mr-3" type="submit" 
                         variant="outline-success">查詢</b-button>
                     </b-input-group>
                 </b-nav-form>
 
                 <b-nav-item-dropdown v-if=" user && auth " right>
                     <template v-slot:button-content>
-                        <b-avatar variant="light" v-if="user.avatar" :src="user.avatar" alt="avatar"></b-avatar>
+                        <b-avatar variant="light" v-if="user.avatar" :src="user.avatar" alt="avatar">
+                        </b-avatar>
                         <span v-if="user.name">{{ user.name }}</span>
                     </template>
                     <b-dropdown-item :to="`/users/${uid}/edit`">
@@ -48,15 +49,15 @@
                 </b-nav-item-dropdown>
 
                 <span v-else>
-                    <div class="nav navbar-nav github-login">
-                        <b-button-group>
-                        <b-button size="sm" to="/auth/login" variant="outline-secondary" squared>
-                            <b-icon icon="box-arrow-in-right"></b-icon>
-                            登 入</b-button>
-                        <b-button size="sm" to="/auth/register" variant="outline-info" squared>
-                            <b-icon icon="person-plus-fill"></b-icon>
-                            註 冊</b-button>
-                        </b-button-group>
+                    <div class="nav navbar-nav my-3">
+                        <b-input-group>
+                            <b-button to="/auth/login" variant="outline-secondary" squared>
+                                <b-icon icon="box-arrow-in-right"></b-icon>
+                                登 入</b-button>
+                            <b-button to="/auth/register" variant="outline-info" squared>
+                                <b-icon icon="person-plus-fill"></b-icon>
+                                註 冊</b-button>
+                        </b-input-group>
                     </div>
                 </span>
 
