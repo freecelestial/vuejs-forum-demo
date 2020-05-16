@@ -125,7 +125,7 @@ export default {
     mounted() {
         const simplemde = new SimpleMDE({
             element: document.querySelector('#content'),
-            placeholder: '請使用 Markdown 語法書寫',
+            placeholder: '可使用 Markdown 語法書寫',
             spellChecker: false,
             autoDownloadFontAwesome: false,
             autosave: {

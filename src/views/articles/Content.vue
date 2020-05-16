@@ -290,7 +290,7 @@ export default {
 
             const simplemde = new SimpleMDE({
                 element: document.querySelector('#editor'),
-                placeholder: '請使用 Markdown 語法書寫',
+                placeholder: '可使用 Markdown 語法書寫',
                 spellChecker: false,
                 autoDownloadFontAwesome: false,
                 // 顯示工具欄 (不能用 true)
