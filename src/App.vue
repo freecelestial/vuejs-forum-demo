@@ -33,8 +33,11 @@ export default {
     @import '~bootstrap-vue/src/index.scss';
     $fa-font-path: "~font-awesome/fonts/";
     @import "~font-awesome/scss/font-awesome";
+
+    @import "animate.css/animate.min.css";
     
     @import 'simplemde/dist/simplemde.min.css';
     @import 'highlight.js/styles/paraiso-dark.css';
 
+    
 </style>

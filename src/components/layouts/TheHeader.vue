@@ -85,9 +85,8 @@ export default {
     },
     methods: {
         logout() {
-                // 提醒確認是否登出
-                this.boxTwo = ''
-                this.$bvModal.msgBoxConfirm('是否確認要登出?', {
+            // 提醒確認是否登出
+            this.$bvModal.msgBoxConfirm('是否確認要登出?', {
                     size: 'sm',
                     buttonSize: 'sm',
                     okVariant: 'danger',

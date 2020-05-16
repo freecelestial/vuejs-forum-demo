@@ -57,19 +57,91 @@
                             tag="article"
                             class="p-2 my-2 text-center "
                         >
-                            <b-button @click="like" href="javascript:;" variant="info">
-                                <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已赞' : '点赞' }}
-                            </b-button>
                             <b-card-text>
-                                <div v-if="!likeUsers.length" class="vote-hint">成为第一个点讚的人吧 !</div>
+                                <b-button-group>
+                                    <b-button @click="like" href="javascript:;" :class="likeClass" 
+                                    :variant="likeClass ? 'secondary' : 'info'">
+                                        <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已讚' : '點讚' }}
+                                    </b-button>
+                                    <div class="or"></div>
+                                    <button @click="showQrcode" class="btn btn-success">
+                                        <i class="fa fa-heart"></i> 打賞</button>
+                                </b-button-group>
+
+                            </b-card-text>
+                            
+                            <b-card-text class="mt-4 mb-0">
+                                <div>
+                                    <span v-for="likeUser in likeUsers" :key="likeUser.uname">
+                                        <!-- animated 是固定的，swing 是動畫名稱 -->
+                                        <router-link :to="`/${likeUser.uname}`"  :class="{ 'animated swing' : likeUser.uid === uid }">
+                                            <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
+                                            ></b-avatar>
+                                        </router-link>
+                                    </span>
+                                </div>
                             </b-card-text>
 
-                            
+                            <b-card-text>
+                                <div v-if="!likeUsers.length" class="mt-3">成爲第一個點讚的人吧 !</div>
+                            </b-card-text>
+
                         </b-card>
 
+                        <!-- 打賞彈窗 -->
+                        <b-modal ref="qrcode-modal" hide-footer>
+                            <template v-slot:modal-title>
+                                <b-avatar variant="success" :src="user.avatar" alt="avatar"></b-avatar>
+                            </template>
+                            <div class="d-block text-center">
+                                <h5 class="mb-4">掃一掃，連結到網頁打賞</h5>
+                                <p>
+                                    <qrcode-vue name="dd" value="https://github.com/freecelestial/" 
+                                    :size="160"></qrcode-vue>
+                                </p>
+                            </div>
+                        </b-modal>
 
+                        <!-- 評論 歷史列表區 -->
+                        <b-card no-body>
+                            <template v-slot:header>
+                                <h5 class="mb-0">評論數量: <b>{{ comments.length }}</b></h5>
+                            </template>
+                            <b-list-group id="reply-list" tag="ul" flush>
+                                <b-list-group-item v-for="(comment, index) in comments" :key="comment.commentId">
+                                    <b-media tag="li">
+                                        <template v-slot:aside>
+                                            <router-link :to="`/${comment.uname}`">
+                                                <b-avatar variant="light" :src="comment.uavatar" class="align-middle"></b-avatar>
+                                            </router-link>
+                                        </template>
+                                        <h5 v-html="`#${index+1} <cite>${comment.uname}</cite>`" class="text-secondary"></h5>
+                                        <h5 v-html="comment.content" class="my-1"></h5>
+
+                                        <!-- 評論 編輯刪除連結 -->
+                                        <span v-if="comment.uid === uid" class="pull-right">
+                                            <a @click="editComment(comment.commentId, index)" :id="`pencil2${index}`" href="javascript:;">
+                                                <b-icon icon="pencil"></b-icon>
+                                            </a>
+                                            <a @click="deleteComment(comment.commentId)" :id="`trash2${index}`" href="javascript:;" >
+                                                <b-icon icon="trash"></b-icon>
+                                            </a>
+                                            <b-tooltip :target="`pencil2${index}`" placement="topleft" variant="info">編輯</b-tooltip>
+                                            <b-tooltip :target="`trash2${index}`" placement="topright" variant="danger">刪除</b-tooltip>
+                                        </span>
+
+                                        <p class="mb-0">
+                                            <abbr class="text-secondary">{{ comment.date | moment('from', { startOf: 'second' }) }}</abbr>
+                                        </p>
+
+                                    </b-media>
+                                </b-list-group-item>
+                            </b-list-group>
+                        </b-card>
+
+                        <!-- 評論 編輯區 -->
                         <b-card-body>
-                            <b-form @submit="onSubmit">
+                            <b-form>
                                 <ValidationProvider name="評論" 
                                         rules="required|max:300" v-slot="{ valid,errors }">
                                     <b-form-group 
@@ -92,13 +164,24 @@
                                     </b-form-group>
 
                                     <!-- commentHtml，這裡使用 v-html 指令同步输出 -->
-                                    <div v-show="commentHtml" id="preview-box" 
-                                    class="box preview markdown-body" v-html="commentHtml"></div>
+                                    <label v-show="commentHtml" >預覽: </label>
+                                    <b-card v-show="commentHtml" class="bg-light">
+                                        <div v-html="commentHtml"></div>
+                                    </b-card>
 
 
-                                    <b-button class="mt-3 text-center" :disabled="invalid" type="submit" variant="primary">
-                                        <b-icon icon="upload"></b-icon> 送 出
+                                    <b-button id="reply-btn" class="mt-4 text-center" :disabled="invalid" 
+                                    variant="primary" @click="comment">
+                                        <b-icon icon="upload"></b-icon> 
+                                        {{ commentId ? '修改評論' : '送出評論' }}
+                                    </b-button> 
+
+                                    <b-button v-show="commentId" class="mt-4 text-center" type="button" 
+                                    variant="outline-secondary"  @click="cancelEditComment">
+                                        <b-icon icon="x"></b-icon> 取消编辑
                                     </b-button>
+                                    <span v-show="!commentId" class="help-inline">Ctrl+Enter</span>
+
                                 </ValidationProvider>
                             </b-form>
                         </b-card-body>
@@ -116,9 +199,6 @@ import hljs from 'highlight.js'
 import emoji from 'node-emoji'
 import { mapState } from 'vuex'
 
-// 引入 qrcode.vue 的默認值
-import QrcodeVue from 'qrcode.vue'
-
 // 引入表單驗證
 import { ValidationProvider, extend ,ValidationObserver} from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
@@ -132,12 +212,11 @@ Object.keys(rules).forEach(rule => {
     });
 });
 
+// 引入 qrcode.vue 的默認值
+import QrcodeVue from 'qrcode.vue'
 
 export default {
     name: 'Content',
-    components: {
-        QrcodeVue
-    },
     data() {
         return {
             form:{
@@ -154,10 +233,10 @@ export default {
             uid: 1, // 用戶 ID
             likeUsers: [], // 點讚用戶列表
             likeClass: '', // 點讚樣式
-            showQrcode: false, // 是否顯示打賞彈窗
             commentHtml: '', // 評論 HTML
             comments: [], // 評論列表
             commentId: undefined, // 評論 ID
+            commentMarkdown: ''
         }
     },
     computed: {
@@ -230,10 +309,9 @@ export default {
                 this.commentHtml = simplemde.markdown(emoji.emojify(this.commentMarkdown, name => name))
             })
 
-            // 按鍵鬆開監聽
+            // 監聽按鈕，當使用 Ctrl+Enter 時提交評論
             simplemde.codemirror.on('keyup', (codemirror, event) => {
-                // 使用 Ctrl+Enter 時提交評論
-                if (event.ctrlKey && event.keyCode === 13) {
+                if (event.ctrlKey && event.which === 13) {
                     this.comment()
                 }else if (this.commentId && event.keyCode === 27) { 
                     // 存在 commentId，且按下 Esc 鍵時
@@ -264,7 +342,6 @@ export default {
             this.$router.push({ name: 'Edit', params: { articleId: this.articleId } })
         },
         deleteArticle() {
-            this.boxTwo = ''
             this.$bvModal.msgBoxConfirm('是否確認要刪除文章?', {
                 size: 'sm',
                 buttonSize: 'sm',
@@ -323,29 +400,32 @@ export default {
                 }
             }
         },
-        onSubmit(evt) {
-            evt.preventDefault()
+        comment() {
             // 編輯器的內容不爲空時
             if (this.commentMarkdown && this.commentMarkdown.trim() !== '') {
                 // 分發 comment 事件以提交評論
-                this.$store.dispatch('comment', {
-                comment: { content: this.commentMarkdown },
-                    articleId: this.articleId,
+                this.$store.dispatch('comment', 
+                    {articleId: this.articleId,
+                    comment: { content: this.commentMarkdown },
+                    // 若有 commentId 代表是編輯
                     commentId: this.commentId
                 }).then(this.renderComments)
-                // 在 .then 的回調裏，調用 this.renderComments 渲染評論
+                // 在 .then 的回調裏，用 this.renderComments 渲染評論
 
-                if (this.commentId) { // 有 commentId 時，取消編輯評論
+                // 有 commentId 時，取消編輯評論
+                if (this.commentId) {
                     this.cancelEditComment()
                 } else {
                     // 清空編輯器
                     this.simplemde.value('')
                     // 使回覆按鈕獲得焦點
                     document.querySelector('#reply-btn').focus()
-
+                    // 調整捲軸到最後評論位置
                     this.$nextTick(() => {
-                        const lastComment = document.querySelector('#reply-list li:last-child')
+                        const lastComment = document.querySelector('#reply-list .list-group-item:last-child')
                         if (lastComment) lastComment.scrollIntoView(true)
+                        // 因標頭固定，微調20 px
+                        window.scrollBy(0,-20)
                     })
                 }
 
@@ -382,13 +462,13 @@ export default {
             for (const comment of comments) {
                 // 找到與 commentId 對應的評論時
                 if (parseInt(comment.commentId) === parseInt(commentId)) {
-                    // 設置編輯器的內容
+                    // 取評論內容放入編輯器
                     simplemde.value(comment.content)
-                    // 使編輯器獲得焦點
+                    // 遊標移到編輯器
                     codemirror.focus()
-                    // 將光標移到內容的後面
+                    // 將遊標移到內容的後面
                     codemirror.setCursor(codemirror.lineCount(), 0)
-                    // 評論索引 + 1，用來指示頁面滾動的位置
+                    // 評論索引 + 1，用來指示取消編輯時，頁面滾動的位置
                     this.commentIndex = commentIndex + 1
                     // 更新 commentId
                     this.commentId = commentId
@@ -403,26 +483,33 @@ export default {
             // 清空編輯器
             this.simplemde.value('')
 
-            // 下次 DOM 更新後，將評論滾動回視圖的頂部
+            // 等 DOM 更新後，將評論滾動回視圖的頂部
             this.$nextTick(() => {
                 if (this.commentIndex === undefined) return
                 // nth-child 從 1 開始
-                const currentComment = document.querySelector(`#reply-list li:nth-child(${this.commentIndex})`)
+                const currentComment = document.querySelector(`#reply-list .list-group-item:nth-child(${this.commentIndex})`)
 
                 if (currentComment) {
                     currentComment.scrollIntoView(true)
-                    currentComment.querySelector('.operate a').focus()
+                    window.scrollBy(0,-60)
+                    // currentComment.querySelector('.operate a').focus()
                 }
             })
         },
         // 刪除評論
         deleteComment(commentId) {
-            this.$swal({
-                text: '你確定要刪除此評論嗎?',
-                confirmButtonText: '刪除'
-            }).then((res) => {
-                if (res.value) {
-                    // 此時不用傳入 comment
+            this.$bvModal.msgBoxConfirm('是否確認要刪除此評論?', {
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: '是',
+                cancelTitle: '否',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value) {
                     this.$store.dispatch('comment', {
                         commentId,
                         articleId: this.articleId
@@ -430,7 +517,13 @@ export default {
 
                     this.cancelEditComment()
                 }
+
             })
+            .catch(err => {
+               alert('登出發生異常錯誤!')
+               
+            })
+
         },
         // 重新取值(帶用戶信息的文章的某項屬性)
         recompute(key) {
@@ -445,10 +538,12 @@ export default {
 
             return arr || []
         },
-
+        showQrcode(){
+            this.$refs['qrcode-modal'].show()
+        }
     },
     components: {
-        ValidationProvider,ValidationObserver
+        ValidationProvider,ValidationObserver,QrcodeVue
     }
 }
 </script>
@@ -457,4 +552,38 @@ export default {
     .CodeMirror,.CodeMirror-scroll {
         min-height: 100px;
     }
+    .fade-enter-active, .fade-leave-active { transition: opacity .5s;}
+    .fade-enter, .fade-leave-to { opacity: 0;}
+    .or {
+        position: relative;
+        float: left;
+        width: .9em;
+        height: 2.57142em;
+        z-index: 3;
+    }
+    .or:before {
+        position: absolute;
+        text-align: center;
+        border-radius: 500rem;
+        content: "or";
+        top: 50%;
+        left: 50%;
+        background-color: #fff;
+        text-shadow: none;
+        margin-top: -.922855em;
+        margin-left: -.802855em;
+        width: 1.78571em;
+        height: 1.78571em;
+        line-height: 1.78571em;
+        color: rgba(0,0,0,.4);
+        font-style: normal;
+        font-weight: 700;
+        -webkit-box-shadow: 0 0 0 1px transparent inset;
+        box-shadow: inset 0 0 0 1px transparent;
+    }
+    .help-inline {
+        margin-left: 10px;
+        vertical-align: bottom;
+    }
+
 </style>
