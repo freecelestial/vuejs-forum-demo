@@ -9,7 +9,7 @@
         </b-breadcrumb>
 
         <b-card-group>
-            <b-card  class="border shadow-sm p-3 mb-5">
+            <b-card class="border shadow-sm p-3 mb-5">
                 <b-card-title>
                     <h3 class="mb-3 font-weight-bolder">
                         <b-icon class="h1" icon="file-earmark-text" variant="primary"></b-icon>
@@ -17,18 +17,23 @@
                 </b-card-title>
 
                 <b-list-group>
-                    <b-list-group-item v-for="article in articles" :key="article.articleId"
+                    <b-list-group-item v-for="(article,index) in articles" :key="article.articleId"
                         class="flex-column align-items-start border-top-0 border-left-0 
                         border-right-0">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-0">
-                                <b-avatar  size="sm" variant="light" :src="article.uavatar"></b-avatar> 
+                        <b-media tag="li">
+                            <template v-slot:aside>
+                                <b-avatar :text="`${index+1}`" variant="info"></b-avatar>
+                            </template>
+                            <h5 class="mt-2">
                                 <router-link :to="`/articles/${article.articleId}/content`" class="title">
                                     {{ article.title }}
                                 </router-link>
                             </h5>
-                            <small>{{ article.date | moment('from') }}</small>
-                        </div>
+                            <p class="mb-0 float-right">
+                                <abbr>{{ article.date | moment('from') }}</abbr>
+                            </p>
+                        </b-media>
+
                     </b-list-group-item>
 
 
@@ -73,5 +78,5 @@ export default {
 <style scoped>
     form,h4 { font-weight:700 }
     .b-icon.bi {vertical-align: middle;}
-
+    .list-group .align-items-start{ line-height: 0.6em; }
 </style>

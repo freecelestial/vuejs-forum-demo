@@ -27,9 +27,13 @@
             <b-breadcrumb-item active>文章內容</b-breadcrumb-item>
         </b-breadcrumb>
 
-        <ValidationObserver ref="observer" v-slot="{ invalid }">
-            <b-card-group class="border shadow p-1 mb-5">
-                    <b-card class="border-0 overflow-auto">
+        <b-card-group class="border shadow p-1 mb-5">
+                <b-card class="border-0 overflow-auto">
+
+                    <!-- 點讚區 -->
+                    <b-card
+                        tag="article"
+                        class="p-2 my-2 text-center">
                         <b-card-body>
                             <b-card-title class="text-center">
                                 {{ form.title }}
@@ -38,159 +42,156 @@
                                 <abbr><b-icon icon="clock-history"></b-icon> 
                                 {{ date | moment('from') }}</abbr>
                             </b-card-sub-title>
-                            <b-card-text class="py-3" v-html="form.content"></b-card-text>
-
+                            <b-card-text class="py-3 text-left" v-html="form.content"></b-card-text>
+                            <hr>
                             <b-card-text>
                                 <!-- 編輯刪除連結 -->
-                                <a @click="editArticle" id="pencil" href="javascript:;">
-                                    <b-icon class="h4" icon="pencil"></b-icon>
-                                </a>
-                                <a @click="deleteArticle" id="trash" href="javascript:;" >
-                                    <b-icon class="h4" icon="trash"></b-icon>
-                                </a>
+                                <b-button @click="editArticle" id="pencil" variant="outline-white">
+                                    <b-icon class="h4" icon="pencil" variant="primary"></b-icon>
+                                </b-button>
+                                <b-button @click="deleteArticle" id="trash" variant="outline-white">
+                                    <b-icon class="h4" icon="trash" variant="primary"></b-icon>
+                                </b-button>
+
                                 <b-tooltip target="pencil" placement="topleft" variant="info">編輯</b-tooltip>
                                 <b-tooltip target="trash" placement="topright" variant="danger">刪除</b-tooltip>
                             </b-card-text>
                         </b-card-body>
 
-                        <!-- 點讚區 -->
-                        <b-card
-                            tag="article"
-                            class="p-2 my-2 text-center "
-                        >
-                            <b-card-text>
-                                <b-button-group>
-                                    <b-button @click="like" href="javascript:;" :class="likeClass" 
-                                    :variant="likeClass ? 'secondary' : 'info'">
-                                        <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已讚' : '點讚' }}
-                                    </b-button>
-                                    <div class="or"></div>
-                                    <button @click="showQrcode" class="btn btn-success">
-                                        <i class="fa fa-heart"></i> 打賞</button>
-                                </b-button-group>
-
-                            </b-card-text>
-                            
-                            <b-card-text class="mt-4 mb-0">
-                                <div>
-                                    <span v-for="likeUser in likeUsers" :key="likeUser.uname">
-                                        <!-- animated 是固定的，swing 是動畫名稱 -->
-                                        <router-link :to="`/${likeUser.uname}`"  :class="{ 'animated swing' : likeUser.uid == uid }">
-                                            <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
-                                            ></b-avatar>
-                                        </router-link>
-                                    </span>
-                                </div>
-                            </b-card-text>
-
-                            <b-card-text>
-                                <div v-if="!likeUsers.length" class="mt-3">成爲第一個點讚的人吧 !</div>
-                            </b-card-text>
-
-                        </b-card>
-
-                        <!-- 打賞彈窗 -->
-                        <b-modal ref="qrcode-modal" hide-footer>
-                            <template v-slot:modal-title>
-                                <b-avatar variant="success" :src="user.avatar" alt="avatar"></b-avatar>
-                            </template>
-                            <div class="d-block text-center">
-                                <h5 class="mb-4">掃一掃，連結到網頁打賞</h5>
-                                <p>
-                                    <qrcode-vue name="dd" value="https://github.com/freecelestial/" 
-                                    :size="160"></qrcode-vue>
-                                </p>
+                        <b-card-text>
+                            <b-button-group>
+                                <b-button @click="like" href="javascript:;" :class="likeClass" 
+                                :variant="likeClass ? 'secondary' : 'info'">
+                                    <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已讚' : '點讚' }}
+                                </b-button>
+                                <div class="or"></div>
+                                <button @click="showQrcode" class="btn btn-success">
+                                    <i class="fa fa-heart"></i> 打賞</button>
+                            </b-button-group>
+                        </b-card-text>
+                        
+                        <b-card-text class="mt-4 mb-0">
+                            <div>
+                                <span v-for="likeUser in likeUsers" :key="likeUser.uname">
+                                    <!-- animated 是固定的，swing 是動畫名稱 -->
+                                    <router-link :to="`/${likeUser.uname}`"  :class="{ 'animated swing' : likeUser.uid == uid }">
+                                        <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
+                                        ></b-avatar>
+                                    </router-link>
+                                </span>
                             </div>
-                        </b-modal>
+                        </b-card-text>
 
-                        <!-- 評論 歷史列表區 -->
-                        <b-card no-body>
-                            <template v-slot:header>
-                                <h5 class="mb-0">評論數量: <b>{{ comments.length }}</b></h5>
-                            </template>
-                            <b-list-group id="reply-list" tag="ul" flush>
-                                <b-list-group-item v-for="(comment, index) in comments" :key="comment.commentId">
-                                    <b-media tag="li">
-                                        <template v-slot:aside>
-                                            <router-link :to="`/${comment.uname}`">
-                                                <b-avatar variant="light" :src="comment.uavatar" class="align-middle"></b-avatar>
-                                            </router-link>
-                                        </template>
-                                        <h5 v-html="`#${index+1} <cite>${comment.uname}</cite>`" class="text-secondary"></h5>
-                                        <h5 v-html="comment.content" class="my-1"></h5>
-
-                                        <!-- 評論 編輯刪除連結 -->
-                                        <span v-if="comment.uid === uid" class="pull-right">
-                                            <a @click="editComment(comment.commentId, index)" :id="`pencil2${index}`" href="javascript:;">
-                                                <b-icon icon="pencil"></b-icon>
-                                            </a>
-                                            <a @click="deleteComment(comment.commentId)" :id="`trash2${index}`" href="javascript:;" >
-                                                <b-icon icon="trash"></b-icon>
-                                            </a>
-                                            <b-tooltip :target="`pencil2${index}`" placement="topleft" variant="info">編輯</b-tooltip>
-                                            <b-tooltip :target="`trash2${index}`" placement="topright" variant="danger">刪除</b-tooltip>
-                                        </span>
-
-                                        <p class="mb-0">
-                                            <abbr class="text-secondary">{{ comment.date | moment('from', { startOf: 'second' }) }}</abbr>
-                                        </p>
-
-                                    </b-media>
-                                </b-list-group-item>
-                            </b-list-group>
-                        </b-card>
-
-                        <!-- 評論 編輯區 -->
-                        <b-card-body>
-                            <b-form>
-                                <ValidationProvider name="評論" 
-                                        rules="required|max:300" v-slot="{ valid,errors }">
-                                    <b-form-group 
-                                        label="評論: " 
-                                    >
-                                        <b-form-textarea
-                                            v-if="auth" 
-                                            id="editor" 
-                                            placeholder="" 
-                                        ></b-form-textarea>
-
-                                        <b-form-textarea
-                                            v-else 
-                                            disabled
-                                            placeholder="登入後才可評論" 
-                                        ></b-form-textarea>
-                                        <b-form-invalid-feedback id="inputLiveFeedback">
-                                            {{ errors[0] }}</b-form-invalid-feedback>
-
-                                    </b-form-group>
-
-                                    <!-- commentHtml，這裡使用 v-html 指令同步输出 -->
-                                    <label v-show="commentHtml" >預覽: </label>
-                                    <b-card v-show="commentHtml" class="bg-light">
-                                        <div v-html="commentHtml"></div>
-                                    </b-card>
-
-
-                                    <b-button id="reply-btn" class="mt-4 text-center" :disabled="invalid" 
-                                    variant="primary" @click="comment">
-                                        <b-icon icon="upload"></b-icon> 
-                                        {{ commentId ? '修改評論' : '送出評論' }}
-                                    </b-button> 
-
-                                    <b-button v-show="commentId" class="mt-4 text-center" type="button" 
-                                    variant="outline-secondary"  @click="cancelEditComment">
-                                        <b-icon icon="x"></b-icon> 取消编辑
-                                    </b-button>
-                                    <span v-show="!commentId" class="help-inline">Ctrl+Enter</span>
-
-                                </ValidationProvider>
-                            </b-form>
-                        </b-card-body>
+                        <b-card-text>
+                            <div v-if="!likeUsers.length" class="mt-3">成爲第一個點讚的人吧 !</div>
+                        </b-card-text>
 
                     </b-card>
-            </b-card-group>
+
+                    <!-- 打賞彈窗 -->
+                    <b-modal ref="qrcode-modal" hide-footer>
+                        <template v-slot:modal-title>
+                            <b-avatar variant="success" :src="user.avatar" alt="avatar"></b-avatar>
+                        </template>
+                        <div class="d-block text-center">
+                            <h5 class="mb-4">掃一掃，連結到網頁打賞</h5>
+                            <p>
+                                <qrcode-vue name="dd" value="https://github.com/freecelestial/" 
+                                :size="160"></qrcode-vue>
+                            </p>
+                        </div>
+                    </b-modal>
+
+                    <!-- 留言 歷史列表區 -->
+                    <b-card no-body>
+                        <template v-slot:header>
+                            <h5 class="mb-0">留言數量: <b>{{ comments.length }}</b></h5>
+                        </template>
+                        <b-list-group id="reply-list" tag="ul" flush>
+                            <b-list-group-item v-for="(comment, index) in comments" :key="comment.commentId">
+                                <b-media tag="li">
+                                    <template v-slot:aside>
+                                        <router-link :to="`/${comment.uname}`">
+                                            <b-avatar variant="info" :src="comment.uavatar" class="align-middle"></b-avatar>
+                                        </router-link>
+                                    </template>
+                                    <h5 v-html="`#${index+1} <cite>${comment.uname}</cite>`" class="text-secondary"></h5>
+                                    <h5 v-html="comment.content" class="my-1"></h5>
+
+                                    <!-- 留言 編輯刪除連結 -->
+                                    <span v-if="comment.uid === uid" class="pull-right">
+                                        <a @click="editComment(comment.commentId, index)" :id="`pencil2${index}`" href="javascript:;">
+                                            <b-icon icon="pencil"></b-icon>
+                                        </a>
+                                        <a @click="deleteComment(comment.commentId)" :id="`trash2${index}`" href="javascript:;" >
+                                            <b-icon icon="trash"></b-icon>
+                                        </a>
+                                        <b-tooltip :target="`pencil2${index}`" placement="topleft" variant="info">編輯</b-tooltip>
+                                        <b-tooltip :target="`trash2${index}`" placement="topright" variant="danger">刪除</b-tooltip>
+                                    </span>
+
+                                    <p class="mb-0">
+                                        <abbr class="text-secondary">{{ comment.date | moment('from', { startOf: 'second' }) }}</abbr>
+                                    </p>
+
+                                </b-media>
+                            </b-list-group-item>
+                        </b-list-group>
+                    </b-card>
+
+                    <!-- 留言 編輯區 -->
+                    <b-card-body>
+                        <b-form>
+                            <ValidationObserver ref="observer" v-slot="{ invalid }">
+                            <ValidationProvider name="留言" 
+                                    rules="required|max:300" v-slot="{ valid,errors }">
+                                <b-form-group 
+                                    label="留言: " 
+                                >
+                                    <b-form-textarea
+                                        v-if="auth" 
+                                        id="editor" 
+                                        placeholder="" 
+                                    ></b-form-textarea>
+
+                                    <b-form-textarea
+                                        v-else 
+                                        disabled
+                                        placeholder="登入後才可留言" 
+                                    ></b-form-textarea>
+                                    <b-form-invalid-feedback id="inputLiveFeedback">
+                                        {{ errors[0] }}</b-form-invalid-feedback>
+
+                                </b-form-group>
+
+                                <!-- commentHtml，這裡使用 v-html 指令同步输出 -->
+                                <label v-show="commentHtml" >預覽: </label>
+                                <b-card v-show="commentHtml" class="bg-light">
+                                    <div v-html="commentHtml"></div>
+                                </b-card>
+
+
+                                <b-button id="reply-btn" class="mt-4 text-center" :disabled="invalid" 
+                                variant="primary" @click="comment">
+                                    <b-icon icon="upload"></b-icon> 
+                                    {{ commentId ? '修改留言' : '送出留言' }}
+                                </b-button> 
+
+                                <b-button v-show="commentId" class="mt-4 text-center" type="button" 
+                                variant="outline-secondary"  @click="cancelEditComment">
+                                    <b-icon icon="x"></b-icon> 取消编辑
+                                </b-button>
+                                <span v-show="!commentId" class="help-inline">Ctrl+Enter</span>
+
+                            </ValidationProvider>
+                            </ValidationObserver>
+                        </b-form>
+                    </b-card-body>
+
+                </b-card>
+        </b-card-group>
             
-        </ValidationObserver>
+        
     </b-col>
 </template>
 
@@ -234,9 +235,9 @@ export default {
             uid: 1, // 用戶 ID
             likeUsers: [], // 點讚用戶列表
             likeClass: '', // 點讚樣式
-            commentHtml: '', // 評論 HTML
-            comments: [], // 評論列表
-            commentId: undefined, // 評論 ID
+            commentHtml: '', // 留言 HTML
+            comments: [], // 留言列表
+            commentId: undefined, // 留言 ID
             commentMarkdown: ''
         }
     },
@@ -310,13 +311,13 @@ export default {
                 this.commentHtml = simplemde.markdown(emoji.emojify(this.commentMarkdown, name => name))
             })
 
-            // 監聽按鈕，當使用 Ctrl+Enter 時提交評論
+            // 監聽按鈕，當使用 Ctrl+Enter 時提交留言
             simplemde.codemirror.on('keyup', (codemirror, event) => {
                 if (event.ctrlKey && event.which === 13) {
                     this.comment()
                 }else if (this.commentId && event.keyCode === 27) { 
                     // 存在 commentId，且按下 Esc 鍵時
-                    // 取消編輯評論
+                    // 取消編輯留言
                     this.cancelEditComment()
                 }
             })
@@ -404,16 +405,16 @@ export default {
         comment() {
             // 編輯器的內容不爲空時
             if (this.commentMarkdown && this.commentMarkdown.trim() !== '') {
-                // 分發 comment 事件以提交評論
+                // 分發 comment 事件以提交留言
                 this.$store.dispatch('comment', 
                     {articleId: this.articleId,
                     comment: { content: this.commentMarkdown },
                     // 若有 commentId 代表是編輯
                     commentId: this.commentId
                 }).then(this.renderComments)
-                // 在 .then 的回調裏，用 this.renderComments 渲染評論
+                // 在 .then 的回調裏，用 this.renderComments 渲染留言
 
-                // 有 commentId 時，取消編輯評論
+                // 有 commentId 時，取消編輯留言
                 if (this.commentId) {
                     this.cancelEditComment()
                 } else {
@@ -421,7 +422,7 @@ export default {
                     this.simplemde.value('')
                     // 使回覆按鈕獲得焦點
                     document.querySelector('#reply-btn').focus()
-                    // 調整捲軸到最後評論位置
+                    // 調整捲軸到最後留言位置
                     this.$nextTick(() => {
                         const lastComment = document.querySelector('#reply-list .list-group-item:last-child')
                         if (lastComment) lastComment.scrollIntoView(true)
@@ -434,7 +435,7 @@ export default {
         },
         renderComments(comments) {
             if (Array.isArray(comments)) {
-                // 使用帶用戶信息的評論
+                // 使用帶用戶信息的留言
                 comments = this.recompute('comments')
 
                 // 深拷貝 comments 以不影響其原值
@@ -442,13 +443,13 @@ export default {
                 const user = this.user || {}
 
                 for (let comment of newComments) {
-                    // 將評論內容從 Markdown 轉成 HTML
+                    // 將留言內容從 Markdown 轉成 HTML
                     comment.content = SimpleMDE.prototype.markdown(emoji.emojify(comment.content, name => name))
                 }
 
                 // 更新實例的 comments
                 this.comments = newComments
-                // 將 Markdown 格式的評論添加到當前實例
+                // 將 Markdown 格式的留言添加到當前實例
                 this.commentsMarkdown = comments
             }
         },
@@ -457,19 +458,19 @@ export default {
             const simplemde = this.simplemde
             // 編輯器
             const codemirror = simplemde.codemirror
-            // Markdown 格式的所有評論
+            // Markdown 格式的所有留言
             const comments = this.commentsMarkdown
 
             for (const comment of comments) {
-                // 找到與 commentId 對應的評論時
+                // 找到與 commentId 對應的留言時
                 if (parseInt(comment.commentId) === parseInt(commentId)) {
-                    // 取評論內容放入編輯器
+                    // 取留言內容放入編輯器
                     simplemde.value(comment.content)
                     // 遊標移到編輯器
                     codemirror.focus()
                     // 將遊標移到內容的後面
                     codemirror.setCursor(codemirror.lineCount(), 0)
-                    // 評論索引 + 1，用來指示取消編輯時，頁面滾動的位置
+                    // 留言索引 + 1，用來指示取消編輯時，頁面滾動的位置
                     this.commentIndex = commentIndex + 1
                     // 更新 commentId
                     this.commentId = commentId
@@ -477,14 +478,14 @@ export default {
                 }
             }
         },
-        // 取消編輯評論
+        // 取消編輯留言
         cancelEditComment() {
             // 清除 commentId
             this.commentId = undefined
             // 清空編輯器
             this.simplemde.value('')
 
-            // 等 DOM 更新後，將評論滾動回視圖的頂部
+            // 等 DOM 更新後，將留言滾動回視圖的頂部
             this.$nextTick(() => {
                 if (this.commentIndex === undefined) return
                 // nth-child 從 1 開始
@@ -497,9 +498,9 @@ export default {
                 }
             })
         },
-        // 刪除評論
+        // 刪除留言
         deleteComment(commentId) {
-            this.$bvModal.msgBoxConfirm('是否確認要刪除此評論?', {
+            this.$bvModal.msgBoxConfirm('是否確認要刪除此留言?', {
                 size: 'sm',
                 buttonSize: 'sm',
                 okVariant: 'danger',

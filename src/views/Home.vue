@@ -1,7 +1,60 @@
 <template>
     <div>
-
-
+        <b-card no-body>
+            <b-tabs pills card>
+                <b-tab title="活躍排序" @click="linkHref('default')" no-body active>
+                    <b-card-text>
+                        <b-list-group tag="ul" flush>
+                            <b-list-group-item v-for="article in articles" :key="article.articleId"
+                                class="flex-column align-items-start border-top-0 border-left-0 
+                                border-right-0" :to="`/articles/${article.articleId}/content`" >
+                                <b-media tag="li">
+                                    <template v-slot:aside>
+                                        <b-avatar variant="info" :src="article.uavatar"></b-avatar> 
+                                    </template>
+                                    <span class="d-inline-block mt-1" style="font-size:1.2em">
+                                        {{ article.title }}
+                                    </span>
+                                    <span class="mb-0 float-right">
+                                        <span>
+                                            <b-button variant="white" title="按讚數" style="cursor: auto;" 
+                                            disabled>
+                                                <b-icon icon="heart-fill" variant="danger"></b-icon>
+                                                {{ article.likeUsers ? article.likeUsers.length : 0 }}
+                                            </b-button>
+                                        </span>
+                                        <span>
+                                            <b-button variant="white" title="留言數" style="cursor: auto;" 
+                                            disabled>
+                                                <b-icon icon="chat-dots-fill" variant="info"></b-icon>
+                                                {{ article.comments ? article.comments.length : 0 }}
+                                            </b-button>
+                                        </span>
+                                        
+                                        <span class="badge badge-light" style="cursor: auto;">
+                                            {{ article.date | moment('from') }}</span>
+                                    </span>
+                                </b-media>
+                            </b-list-group-item>
+                        </b-list-group>
+                    </b-card-text>
+                </b-tab>
+                <b-tab title="回覆數排序" @click="linkHref('excellent')">
+                    <b-card-text>
+                        dsf
+                    </b-card-text>
+                </b-tab>
+                <b-tab title="點讚數排序" @click="linkHref('vote')">
+                    <b-card-text>Tab contents 3</b-card-text>
+                </b-tab>
+                <b-tab title="時間排序" @click="linkHref('recent')">
+                    <b-card-text>Tab contents 4</b-card-text>
+                </b-tab>
+                <b-tab title="留言排序" @click="linkHref('noreply')">
+                    <b-card-text>Tab contents 5</b-card-text>
+                </b-tab>
+            </b-tabs>
+        </b-card>
     </div>
 </template>
 
@@ -82,6 +135,7 @@ export default {
         // 監聽 '$route'，在查詢參數變化後，設置相關數據
         '$route'(to) {
             this.setDataByFilter(to.query.filter)
+            // alert('watch')
         }
     },
     methods: {
@@ -95,6 +149,15 @@ export default {
         },
         countDownChanged(dismissCountDown) {
             this.dismissCountDown = dismissCountDown
+        },
+        linkHref(filter='default'){
+            //filter=default 活躍
+            //filter=excellent 精華
+            //filter=vote 點讚
+            //filter=recent 最近
+            //filter=noreply 無留言
+            location.href = "/topics?filter="+filter
+
         },
         setDataByFilter(filter = 'default') {
             // 每頁條數
@@ -123,5 +186,5 @@ export default {
 
 
 <style scoped>
-
+    .nav-item{font-weight:border}
 </style>

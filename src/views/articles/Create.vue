@@ -5,7 +5,7 @@
             <b-icon icon="house-fill" scale="1.25" shift-v="1.25" aria-hidden="true"></b-icon>
              Home
             </b-breadcrumb-item>
-            <b-breadcrumb-item active>創作文章</b-breadcrumb-item>
+            <b-breadcrumb-item active>{{ articleId ?'編輯文章':'創作文章'}}</b-breadcrumb-item>
         </b-breadcrumb>
 
         <ValidationObserver ref="observer" v-slot="{ invalid }">
@@ -15,8 +15,8 @@
                         <b-card class="border-0">
                             <b-card-text>
                                 <b-card-title>
-                                    <b-icon class="h1" icon="file-plus" variant="primary"></b-icon> 
-                                    創作文章
+                                    <b-icon class="h1" :icon="titleIcon" variant="primary"></b-icon> 
+                                    {{ articleId ?'編輯文章':'創作文章'}}
                                 </b-card-title>
                                 <hr>
                                 <ValidationProvider name="標題" 
@@ -53,7 +53,8 @@
                                     
                                 </ValidationProvider>
 
-                                <b-button class="mt-4" :disabled="invalid" type="submit" variant="primary" block>
+                                <b-button class="mt-4" :disabled="invalid" type="submit" 
+                                    variant="primary" block>
                                     <b-icon icon="upload"></b-icon> 送 出
                                 </b-button>
                             </b-card-text>
@@ -98,6 +99,12 @@ export default {
             // 臨時用它來判斷是否還處於當前編輯頁面
             articleId: undefined,
         }
+    },
+    computed:{
+        titleIcon(){
+            return this.articleId == undefined  ? 'file-plus':'file-diff'
+        }
+
     },
     // 進入路由前，設置 articleId
     // 此時只能用 vm 不能用 this

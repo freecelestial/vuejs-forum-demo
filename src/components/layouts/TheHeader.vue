@@ -1,5 +1,5 @@
 <template>
-    <b-navbar toggleable="lg" type="light" variant="light" class="fixed-top shadow-sm pb-0 mb-5">
+    <b-navbar toggleable="md" type="light" variant="light" class="fixed-top shadow-sm pb-0 mb-5">
         <b-navbar-brand to="/">
             <img src="@/assets/logo.png" class="d-inline-block align-top" alt="logo">
             ForumDemo
@@ -49,7 +49,7 @@
                 </b-nav-item-dropdown>
 
                 <span v-else>
-                    <div class="nav navbar-nav my-3">
+                    <div class="nav navbar-nav my-3 my-md-1">
                         <b-input-group>
                             <b-button to="/auth/login" variant="outline-secondary" squared>
                                 <b-icon icon="box-arrow-in-right"></b-icon>
