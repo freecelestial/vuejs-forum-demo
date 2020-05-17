@@ -11,7 +11,8 @@ export const computedArticles = (state) => {
         // 當前登入用戶資料
         const userName = state.user && state.user.name
         const userAvatar = state.user && state.user.avatar
-        const avatarUrl = 'https://api.adorable.io/avatars/200/'
+        //const avatarUrl = 'https://api.adorable.io/avatars/200/'
+        const avatarUrl = 'https://ui-avatars.com/api/?name='
 
         // 是當前用戶時，設置用戶數據爲當前用戶的信息
         if (isCurrentUser) {
@@ -129,18 +130,18 @@ export const getArticlesByFilter = (state, getters) => (filter) => {
                 // 將最新寫的文章排在前面
                 filteredArticles.reverse()
             break
-            case 'noreply':
-                // 將評論最少的文章排在前面
+            case 'morereply':
+                // 將評論最多的文章排在前面
                 filteredArticles.sort((a, b) => {
                     const aComments = Array.isArray(a.comments) ? a.comments : []
                     const bComments = Array.isArray(b.comments) ? b.comments : []
 
-                    return aComments.length - bComments.length
+                    return bComments.length - aComments.length
                 })
 
             break
             default:
-                // 默認將回復時間最新的文章排在前面
+                // 將回復時間最新的文章排在前面
                 filteredArticles.sort((a, b) => {
                     const aComments = Array.isArray(a.comments) ? a.comments : []
                     const bComments = Array.isArray(b.comments) ? b.comments : []

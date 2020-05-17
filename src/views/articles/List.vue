@@ -36,11 +36,7 @@
 
                     </b-list-group-item>
 
-
                 </b-list-group>
-                    <div class="mt-5">
-                        <b-pagination v-model="currentPage" :total-rows="rows" align="center"></b-pagination>
-                    </div>
                 
             </b-card>
         </b-card-group>
@@ -56,8 +52,6 @@ export default {
     data() {
         return {
             articles: [],
-            rows: 100,
-            currentPage: 1
         }
     },
     computed: {

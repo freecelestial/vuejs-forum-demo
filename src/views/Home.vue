@@ -2,56 +2,23 @@
     <div>
         <b-card no-body>
             <b-tabs pills card>
-                <b-tab title="活躍排序" @click="linkHref('default')" no-body active>
+                <b-tab v-for="item in filters" :key="item.name" 
+                    :title="item.title" @click="setDataByFilter(item.filter)" 
+                    :class="{ active: filter === item.filter }" no-body>
                     <b-card-text>
-                        <b-list-group tag="ul" flush>
-                            <b-list-group-item v-for="article in articles" :key="article.articleId"
-                                class="flex-column align-items-start border-top-0 border-left-0 
-                                border-right-0" :to="`/articles/${article.articleId}/content`" >
-                                <b-media tag="li">
-                                    <template v-slot:aside>
-                                        <b-avatar :to="`/${article.uname}`" variant="info" :src="article.uavatar"></b-avatar> 
-                                    </template>
-                                    <span class="d-inline-block mt-1" style="font-size:1.2em">
-                                        {{ article.title }}
-                                    </span>
-                                    <span class="mb-0 float-right">
-                                        <span>
-                                            <b-button variant="white" title="按讚數" style="cursor: auto;" 
-                                            disabled>
-                                                <b-icon icon="heart-fill" variant="danger"></b-icon>
-                                                {{ article.likeUsers ? article.likeUsers.length : 0 }}
-                                            </b-button>
-                                        </span>
-                                        <span>
-                                            <b-button variant="white" title="留言數" style="cursor: auto;" 
-                                            disabled>
-                                                <b-icon icon="chat-dots-fill" variant="info"></b-icon>
-                                                {{ article.comments ? article.comments.length : 0 }}
-                                            </b-button>
-                                        </span>
-                                        
-                                        <span class="badge badge-light" style="cursor: auto;">
-                                            {{ article.date | moment('from') }}</span>
-                                    </span>
-                                </b-media>
-                            </b-list-group-item>
-                        </b-list-group>
+                        <TabContent :articles="articles"/>
+                        <div class="mt-5 overflow-auto">
+                            <b-pagination-nav 
+                                :link-gen="linkGen" 
+                                :number-of-pages="numberOfPages" 
+                                use-router
+                                align="center"
+                                first-number
+                                last-number
+                            >
+                            </b-pagination-nav>
+                        </div>
                     </b-card-text>
-                </b-tab>
-                <b-tab title="回覆數排序" @click="linkHref('excellent')">
-                    <b-card-text>
-                        dsf
-                    </b-card-text>
-                </b-tab>
-                <b-tab title="點讚數排序" @click="linkHref('vote')">
-                    <b-card-text>Tab contents 3</b-card-text>
-                </b-tab>
-                <b-tab title="時間排序" @click="linkHref('recent')">
-                    <b-card-text>Tab contents 4</b-card-text>
-                </b-tab>
-                <b-tab title="留言排序" @click="linkHref('noreply')">
-                    <b-card-text>Tab contents 5</b-card-text>
                 </b-tab>
             </b-tabs>
         </b-card>
@@ -61,6 +28,7 @@
 <script>
 import { mapState } from 'vuex'
 // 引入 TheSidebar.vue 的默認值
+import TabContent from '@/components/TabContent'
 import TheSidebar from '@/components/layouts/TheSidebar'
 
 
@@ -68,21 +36,22 @@ export default {
     name: 'Home',
     components: {
         // 因爲只在首頁使用側欄，所以將 TheSidebar 註冊到局部
-        TheSidebar
+        TabContent,TheSidebar
     },
     data() {
         return {
             articles: [], // 文章列表
-            filter: 'default', // 默認過濾方式
+            filter: 'default', // 目前排序方式
             filters: [ // 過濾方式列表
-                { filter: 'default', name: '活躍', title: '最後回覆排序'},
-                { filter: 'excellent', name: '精華', title: '只看加精的話題'},
-                { filter: 'vote', name: '投票', title: '點贊數排序'},
-                { filter: 'recent', name: '最近', title: '發佈時間排序'},
-                { filter: 'noreply', name: '零回覆', title: '無人問津的話題'}
+                { filter: 'default', name: '活躍', title: '依最新留言排序'},
+                { filter: 'excellent', name: '注目', title: '只看加精的話題'},
+                { filter: 'vote', name: '精品', title: '點讚數排序'},
+                { filter: 'recent', name: '最新', title: '文章發佈時間排序'},
+                { filter: 'morereply', name: '人氣', title: '評論多的話題'}
             ],
-            total: 0, // 文章總數
-            pageSize: 20, // 每頁條數
+            // total: 0, 
+            pageSize: 10, // 每頁條數
+            totalRows: 0, // 文章總數
         }
     },
     // 組件內的路由守衛
@@ -110,9 +79,9 @@ export default {
                 // logout 返回 true 時，顯示操作成功提示
                 vm.makeToast('登出成功')
             }
-
             // 確認渲染該組件的對應路由時，設置相關數據
-            vm.setDataByFilter(to.query.filter)
+            //vm.setDataByFilter(to.query.filter)
+            vm.setDataByFilter()
 
         })
     },
@@ -124,7 +93,11 @@ export default {
         // 當前頁，從查詢參數 page 返回
         currentPage() {
             return parseInt(this.$route.query.page) || 1
+        },
+        numberOfPages(){
+            return Math.ceil(this.totalRows/this.pageSize)
         }
+
     },
     watch: {
         auth(value) {
@@ -134,8 +107,8 @@ export default {
         },
         // 監聽 '$route'，在查詢參數變化後，設置相關數據
         '$route'(to) {
-            this.setDataByFilter(to.query.filter)
-            // alert('watch')
+            // this.setDataByFilter(to.query.filter)
+            this.setDataByFilter()
         }
     },
     methods: {
@@ -150,15 +123,6 @@ export default {
         countDownChanged(dismissCountDown) {
             this.dismissCountDown = dismissCountDown
         },
-        linkHref(filter='default'){
-            //filter=default 活躍
-            //filter=excellent 精華
-            //filter=vote 點讚
-            //filter=recent 最近
-            //filter=noreply 無留言
-            location.href = "/topics?filter="+filter
-
-        },
         setDataByFilter(filter = 'default') {
             // 每頁條數
             const pageSize = this.pageSize
@@ -169,16 +133,12 @@ export default {
 
             this.filter = filter
             // 文章總數
-            this.total = allArticles.length
+            this.totalRows = allArticles.length
             // 當前頁的文章
             this.articles = allArticles.slice(pageSize * (currentPage - 1), pageSize * currentPage)
         },
-        // 回調，組件的當前頁改變時調用
-        changePage(page) {
-            // 在查詢參數中混入 page，並跳轉到該地址
-            // 混入部分等價於 Object.assign({}, this.$route.query, { page: page })
-            // 有相同屬性時，後方的page會取代前方的page
-            this.$router.push({ query: { ...this.$route.query, page } })
+        linkGen(pageNum) {
+            return pageNum === 1 ? '?' : `?page=${pageNum}`
         }
     }
 }
