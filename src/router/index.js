@@ -32,7 +32,12 @@ router.beforeEach((to, from, next) => {
     const store = app.$options.store
     const auth = store.state.auth
     const articleId = to.params.articleId
+    // 当前用户
+    const user = store.state.user && store.state.user.name
+    // 获取目标页面路由参数里的 user
+    const paramUser = to.params.user
 
+    
     // 登入的情況下，網址有 auth，會跳轉到首頁
     if (
         (auth && to.path.indexOf('/auth/') !== -1) || 
