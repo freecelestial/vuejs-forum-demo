@@ -2,18 +2,18 @@
     <b-row  align-h="center">
         <b-col md="3" class="d-none d-lg-block">
             <b-card class="shadow-sm p-1 mb-5"
-                :img-src="user.avatar"
+                :img-src="userAvatar"
                 img-alt="Avatar"
                 img-top
                 rounded="circle" 
             >
                 <b-card-body>
-                    <b-card-title class="text-center">{{ user.name }} 的專欄</b-card-title>
+                    <b-card-title class="text-center">{{ userName }} 的專欄</b-card-title>
                 </b-card-body>
 
                 <b-card-body>
                     <b-button v-if="buttonListShow" 
-                        :to="`/${ user.name }`" variant="outline-success" block>
+                        :to="`/${ userName }`" variant="outline-success" block>
                         <b-icon icon="file-earmark-text"></b-icon>
                         文章列表 
                     </b-button>
@@ -49,6 +49,12 @@ export default {
         articleNum() {
             return this.articles.length
         }
+    },
+    beforeRouteEnter(to, from, next) {
+        next(vm => {
+            // 确认渲染该组件的对应路由时，通过 to.params 参数设置用户和文章数据
+            vm.setDataByParams(to.params)
+        })
     },
     watch: {
         '$route'(to) {

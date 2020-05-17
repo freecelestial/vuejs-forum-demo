@@ -1,10 +1,12 @@
-// 返回添加用戶信息後的所有文章
+// 返回添加用戶資料(uname,uavatar)後的所有文章
 // 在需要的地方，我們可以使用 store.getters.computedArticles 來代替 store.state.articles
 export const computedArticles = (state) => {
     let articles = state.articles
     let newArticles = []
 
-    // 添加用戶信息，參數 isCurrentUser 代表是否是當前用戶
+    // 下方會用到的添加用戶訊息函數
+    // 參數 isCurrentUser 代表是否是當前用戶
+    // state.user 在此測試環境一定是單個物件
     const addUserInfo = function(isCurrentUser) {
         // 當前登入用戶資料
         const userName = state.user && state.user.name
@@ -13,6 +15,8 @@ export const computedArticles = (state) => {
 
         // 是當前用戶時，設置用戶數據爲當前用戶的信息
         if (isCurrentUser) {
+            // 下方是用 call() 所以此處要用 this 
+            // this 會指向 article 或 comment 或 likeUser 物件
             this.uname = userName
             this.uavatar = userAvatar
         } else {
@@ -29,7 +33,8 @@ export const computedArticles = (state) => {
             const comments = article.comments
             const likeUsers = article.likeUsers
 
-            // 添加用戶信息到文章(因測試和手動增加的文章格式不同而區分)
+            // 因測試和手動增加的文章格式不同
+            // 附加不同的訊息在文章內
             if (article.uid === 1) {
                 addUserInfo.call(article, true)
             } else {
@@ -63,7 +68,7 @@ export const computedArticles = (state) => {
     return newArticles
 }
 
-// 返回指定 uid 下的所有文章
+// 返回指定 uid 或 user name 下的所有文章
 // 參數 uid 是用戶 ID，user 是用戶名，傳入任一參數可取得該用戶的所有文章
 // 第二個參數是 getters，通過它可以訪問倉庫的派生狀態。
 export const getArticlesByUid = (state, getters) => (uid, user) => {
@@ -71,9 +76,8 @@ export const getArticlesByUid = (state, getters) => (uid, user) => {
     let articles = getters.computedArticles
   
     if (Array.isArray(articles)) {
-        // 有用戶名時遍歷所有文章
-        // 通過 http://localhost:8080/:user 這類地址訪問『個人專欄』的時候
-        // 路由是不帶 uid 參數的，我們需要通過 user 參數找到 uid
+        // 通過 http://localhost:8080/:user 訪問『個人專欄』的時候
+        // 通過 user 參數找到 uid
         if (user) {
             for (const article of articles) {
                 if (article.uname === user) {
@@ -84,7 +88,7 @@ export const getArticlesByUid = (state, getters) => (uid, user) => {
             }
         }
     
-        // 使用指定 uid 過濾所有文章
+        // 取得指定的 uid 所有文章
         articles = articles.filter(article => parseInt(uid) === parseInt(article.uid))
     } else {
         articles = []

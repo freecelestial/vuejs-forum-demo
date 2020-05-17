@@ -39,9 +39,9 @@ export const mockArticles = (num = 10) => {
             uid: index + 2,
             articleId: nextArticleId + index,
             // 随机生成 10 - 20 字的中文标题
-            title: Random.ctitle(10, 20),
+            title: Random.ctitle(15, 30),
             // 随机生成 3 - 5 个的中文段落
-            content: Random.cparagraph(3, 5),
+            content: Random.cparagraph(32, 50),
             date: new Date(),
             likeUsers: [],
             comments: [],

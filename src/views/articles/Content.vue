@@ -74,7 +74,8 @@
                             <div>
                                 <span v-for="likeUser in likeUsers" :key="likeUser.uname">
                                     <!-- animated 是固定的，swing 是動畫名稱 -->
-                                    <router-link :to="`/${likeUser.uname}`"  :class="{ 'animated swing' : likeUser.uid == uid }">
+                                    <router-link :to="`/${likeUser.uname}`"  
+                                    :class="{ 'animated swing' : likeUser.uid == myid }">
                                         <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
                                         ></b-avatar>
                                     </router-link>
@@ -119,7 +120,7 @@
                                     <h5 v-html="comment.content" class="my-1"></h5>
 
                                     <!-- 留言 編輯刪除連結 -->
-                                    <span v-if="comment.uid === uid" class="pull-right">
+                                    <span v-if="comment.uid === myid" class="pull-right">
                                         <a @click="editComment(comment.commentId, index)" :id="`pencil2${index}`" href="javascript:;">
                                             <b-icon icon="pencil"></b-icon>
                                         </a>
@@ -232,7 +233,8 @@ export default {
             dismissSecs: 5,
             dismissCountDown: 0,
             date: '', // 文章創建時間
-            uid: 1, // 用戶 ID
+            myid: 1, // 登入用戶 ID
+            uid: 1, // 此頁用戶 ID
             likeUsers: [], // 點讚用戶列表
             likeClass: '', // 點讚樣式
             commentHtml: '', // 留言 HTML

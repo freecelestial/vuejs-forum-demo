@@ -9,6 +9,19 @@ const router = new Router({
     mode: 'history',
     // 使 <router-view/> 路徑相同時，自動加入 class="active"
     linkExactActiveClass: 'active',
+    // 指定滚动行为
+    scrollBehavior(to, from, savedPosition) {
+        if (to.hash) {
+            // 有锚点时，滚动到锚点
+            return { selector: to.hash }
+        } else if (savedPosition) {
+            // 有保存位置时，滚动到保存位置
+            return savedPosition
+        } else {
+            // 默认滚动到页面顶部
+            return { x: 0, y: 0 }
+        }
+    },
     routes
 })
 
@@ -25,7 +38,8 @@ router.beforeEach((to, from, next) => {
         (auth && to.path.indexOf('/auth/') !== -1) || 
         (!auth && to.meta.auth) || 
         // 有 articleId 且不能找到与其对应的文章时，跳转到首页
-        (articleId && !store.getters.getArticleById(articleId))
+        (articleId && !store.getters.getArticleById(articleId)) ||
+        (paramUser && paramUser !== user && !store.getters.getArticlesByUid(null, paramUser).length)
     ) {
         next('/')
     } else {

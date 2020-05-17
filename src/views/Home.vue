@@ -10,7 +10,7 @@
                                 border-right-0" :to="`/articles/${article.articleId}/content`" >
                                 <b-media tag="li">
                                     <template v-slot:aside>
-                                        <b-avatar variant="info" :src="article.uavatar"></b-avatar> 
+                                        <b-avatar :to="`/${article.uname}`" variant="info" :src="article.uavatar"></b-avatar> 
                                     </template>
                                     <span class="d-inline-block mt-1" style="font-size:1.2em">
                                         {{ article.title }}
