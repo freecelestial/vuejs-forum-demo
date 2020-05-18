@@ -7,8 +7,6 @@
             </b-breadcrumb-item>
             <b-breadcrumb-item active>文章列表</b-breadcrumb-item>
         </b-breadcrumb>
-
-        <b-card-group>
             <b-card class="border shadow-sm p-3 mb-5">
                 <b-card-title>
                     <h3 class="mb-3 font-weight-bolder">
@@ -38,7 +36,6 @@
                 </b-list-group>
                 
             </b-card>
-        </b-card-group>
     </b-col>
 </template>
 

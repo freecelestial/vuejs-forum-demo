@@ -127,7 +127,8 @@ export default {
             evt.preventDefault()
             const value = this.value
             if (value !== '') {
-                this.$router.push({ name: 'Search', query: { q: value } })
+                // 到 Search.vue 顯示
+                this.$router.push({ name: 'Search', query: { q: value } }).catch(() => {})
             }
         },
         // 更新 searchValue

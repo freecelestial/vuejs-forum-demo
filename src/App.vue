@@ -50,11 +50,27 @@ export default {
     .nav-item>a{
         color:#009688;
     }
-    .card-body h5>a,.page-link{
+
+    .page-link{
         color:#009688;
     }
     a {
         color: #01AAED;
+    }
+    h3.title a {
+        color: #333;
+    }
+    .search-results {
+        .url a {
+            color: #23863f;
+        }
+        span.highlight {
+            color: #e07b7a;
+        }
+        .desc .highlight {
+            color: #e07b7a;
+        }
+
     }
 
 

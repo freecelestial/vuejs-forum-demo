@@ -13,7 +13,7 @@
 
                 <b-card-body>
                     <b-button v-if="buttonListShow" 
-                        :to="`/${ userName }`" variant="outline-success" block>
+                        :to="`/${ userName }`" variant="outline-primary" block>
                         <b-icon icon="file-earmark-text"></b-icon>
                         文章列表 
                     </b-button>

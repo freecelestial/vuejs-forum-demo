@@ -39,7 +39,8 @@
                     <b-badge v-for="activeUser in activeUsers" 
                         :to="`/${ activeUser.name }`" 
                         :key="activeUser.name" 
-                        variant="white"
+                        variant="white" 
+                        style="color:#666;"
                     >
                         <b-avatar variant="info"
                         :src="activeUser.avatar"></b-avatar> 
@@ -60,8 +61,9 @@
             <b-card-text class="text-left text-secondary">
                 <b-list-group flush>
                     <b-list-group-item v-for="(article, index) in hotArticles"
-                     :key="index">                        
-                        <router-link :to="`/articles/${article.articleId}/content`">
+                     :key="index" style="color:#555;">                        
+                        <router-link :to="`/articles/${article.articleId}/content`" 
+                         style="color:#555;">
                             <span>{{ index + 1 }}.</span>
                             {{ article.title }}
                         </router-link>

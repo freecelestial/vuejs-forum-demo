@@ -7,7 +7,7 @@
                 <template v-slot:aside>
                     <b-avatar :to="`/${article.uname}`" variant="info" :src="article.uavatar"></b-avatar> 
                 </template>
-                <span class="d-inline-block mt-1" style="font-size:1.2em">
+                <span class="d-inline-block mt-1" style="font-size:1.2em;font-weight: 600;">
                     {{ article.title }}
                 </span>
                 <span class="mb-0 float-right">
