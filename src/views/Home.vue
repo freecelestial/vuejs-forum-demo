@@ -5,7 +5,7 @@
                 <b-tabs pills card>
                     <b-tab v-for="item in filters" :key="item.name" 
                         :title="item.title" @click="setDataByFilter(item.filter)" 
-                        :class="{ active: filter === item.filter }" no-body lazy>
+                        :class="{ active: filter === item.filter }" no-body>
                         <b-card-text>
                             <TabContent :articles="articles"/>
                             <div class="mt-5 overflow-auto">
@@ -89,7 +89,6 @@ export default {
             // 確認渲染該組件的對應路由時，設置相關數據
             //vm.setDataByFilter(to.query.filter)
             vm.setDataByFilter()
-
         })
     },
     computed: {
@@ -102,9 +101,7 @@ export default {
             return parseInt(this.$route.query.page) || 1
         },
         numberOfPages(){
-            this.$nextTick(() => {
-                 return Math.ceil(this.totalRows/this.pageSize)
-            })
+            return Math.ceil(this.totalRows/this.pageSize) || 1
         }
 
     },

@@ -15,13 +15,18 @@
             <!-- 右側 -->
             <b-navbar-nav class="ml-auto">
 
-                <b-nav-form inline>
+                <b-nav-form inline @submit="search">
                     <b-input-group>
                         <b-input-group-prepend is-text>
                             <b-icon icon="search"></b-icon>
                         </b-input-group-prepend>
                         <b-form-input class="mr-1" 
-                        type="search" placeholder="搜尋文章"></b-form-input>
+                            v-model.trim="value" 
+                            @keyup.enter="search"
+                            @input="updateSearchValue"
+                            type="search" placeholder="搜尋文章"
+                        >
+                        </b-form-input>
                         <b-button class="my-0 mr-3" type="submit" 
                         variant="outline-success">查詢</b-button>
                     </b-input-group>
@@ -72,16 +77,25 @@ import { mapState } from 'vuex'
 
 export default {
     name: 'TheHeader',
-    computed: {
-        ...mapState([
-            'auth',
-            'user'
-        ])
-    },
     data() {
         return {
             uid: 1,
             boxShow: false,
+            value:''
+        }
+    },
+    computed: {
+        ...mapState([
+            'auth',
+            'user'
+        ]),
+        searchValue: {
+            get() {
+                return this.$store.state.searchValue
+            },
+            set(newValue) {
+                this.value = newValue
+            }
         }
     },
     methods: {
@@ -108,6 +122,18 @@ export default {
                
             })
 
+        },
+        search(evt) {
+            evt.preventDefault()
+            const value = this.value
+            if (value !== '') {
+                this.$router.push({ name: 'Search', query: { q: value } })
+            }
+        },
+        // 更新 searchValue
+        updateSearchValue() {
+            // 未用 action 直接用 mutation
+            this.$store.commit('UPDATE_SEARCH_VALUE', this.value)
         }
     }
 }

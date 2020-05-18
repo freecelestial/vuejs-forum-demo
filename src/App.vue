@@ -39,5 +39,23 @@ export default {
     @import 'simplemde/dist/simplemde.min.css';
     @import 'highlight.js/styles/paraiso-dark.css';
 
-    
+    .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+        background-color: #5FB878;
+        font-weight: bolder;
+    }
+    .page-item.active .page-link {
+        background-color: #5FB878;
+        border-color: #5FB878;
+    }
+    .nav-item>a{
+        color:#009688;
+    }
+    .card-body h5>a,.page-link{
+        color:#009688;
+    }
+    a {
+        color: #01AAED;
+    }
+
+
 </style>

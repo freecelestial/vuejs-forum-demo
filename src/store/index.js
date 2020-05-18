@@ -15,6 +15,7 @@ const state = {
     auth: ls.getItem('auth'),
     // 所有文章狀態
     articles: ls.getItem('articles'),
+    // 搜尋字串
     searchValue: '',
     // 默認爲 location.origin（域名的標準形式）
     origin: location.origin.indexOf('github.io') !== -1 ? 
