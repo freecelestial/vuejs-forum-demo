@@ -90,7 +90,8 @@ function getRandomArticles(articles, num = 5) {
     // 化為整數
     const randomNum = Math.floor(Math.random() * num + 1)
 
-    const randomArticles = [...Array(randomNum)].map(() => articles[Math.floor(Math.random() * articles.length)])
+    const randomArticles = [...Array(randomNum)].map(() => 
+    articles[Math.floor(Math.random() * articles.length)])
     // Set 类似于数组，但其成员的值都是唯一的，因此可以使用下面的方法去重覆
     return [...new Set(randomArticles)]
 }

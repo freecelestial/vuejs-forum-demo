@@ -12,7 +12,12 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import './filters'
 import { mockArticles } from './mock/data'
 import ls from './utils/localStorage'
-
+// 运行 ./mock/index.js
+import './mock'
+// 引入 axios 的默認值
+import axios from 'axios'
+// 將 axios 添加到 Vue.prototype 上，使其在實例內部的所有組件中可用
+Vue.prototype.$axios = axios
 
 // 每次使用都直接載入儲存在 localstorage 的數據 加上 50 筆 mock 產生的數據
 const AddMockData = (() => {

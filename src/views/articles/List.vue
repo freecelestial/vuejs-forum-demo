@@ -16,10 +16,9 @@
                         文章列表</h3>
                 </b-card-title>
 
-                <b-list-group>
+                <b-list-group flush>
                     <b-list-group-item v-for="(article,index) in articles" :key="article.articleId"
-                        class="flex-column align-items-start border-top-0 border-left-0 
-                        border-right-0">
+                        class="flex-column align-items-start">
                         <b-media tag="li">
                             <template v-slot:aside>
                                 <b-avatar :text="`${index+1}`" variant="info"></b-avatar>

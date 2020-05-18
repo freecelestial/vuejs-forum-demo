@@ -1,9 +1,5 @@
 <template>
     <b-row align-h="center">
-        <b-col md="3" class="d-none d-lg-block">
-            <!-- 侧栏 -->
-            <TheSidebar/>
-        </b-col>
         <b-col md="9">
             <b-card no-body>
                 <b-tabs pills card>
@@ -28,7 +24,11 @@
                 </b-tabs>
             </b-card>
         </b-col>
-
+        
+        <b-col md="3" class="d-none d-lg-block">
+            <!-- 侧栏 -->
+            <TheSidebar/>
+        </b-col>
     </b-row>
 </template>
 
