@@ -1,5 +1,5 @@
 <template>
-    <b-row  align-h="center">
+    <b-row align-h="center">
         <b-col md="3" class="d-none d-lg-block">
             <b-card class="shadow-sm p-1 mb-5"
                 :img-src="userAvatar"

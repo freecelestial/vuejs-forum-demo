@@ -192,7 +192,6 @@
                 </b-card>
         </b-card-group>
             
-        
     </b-col>
 </template>
 

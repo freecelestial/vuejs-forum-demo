@@ -1,28 +1,35 @@
 <template>
-    <div>
-        <b-card no-body>
-            <b-tabs pills card>
-                <b-tab v-for="item in filters" :key="item.name" 
-                    :title="item.title" @click="setDataByFilter(item.filter)" 
-                    :class="{ active: filter === item.filter }" no-body lazy>
-                    <b-card-text>
-                        <TabContent :articles="articles"/>
-                        <div class="mt-5 overflow-auto">
-                            <b-pagination-nav 
-                                :link-gen="linkGen" 
-                                :number-of-pages="numberOfPages" 
-                                use-router
-                                align="center"
-                                first-number
-                                last-number
-                            >
-                            </b-pagination-nav>
-                        </div>
-                    </b-card-text>
-                </b-tab>
-            </b-tabs>
-        </b-card>
-    </div>
+    <b-row align-h="center">
+        <b-col md="3" class="d-none d-lg-block">
+            <!-- 侧栏 -->
+            <TheSidebar/>
+        </b-col>
+        <b-col md="9">
+            <b-card no-body>
+                <b-tabs pills card>
+                    <b-tab v-for="item in filters" :key="item.name" 
+                        :title="item.title" @click="setDataByFilter(item.filter)" 
+                        :class="{ active: filter === item.filter }" no-body lazy>
+                        <b-card-text>
+                            <TabContent :articles="articles"/>
+                            <div class="mt-5 overflow-auto">
+                                <b-pagination-nav 
+                                    :link-gen="linkGen" 
+                                    :number-of-pages="numberOfPages" 
+                                    use-router
+                                    align="center"
+                                    first-number
+                                    last-number
+                                >
+                                </b-pagination-nav>
+                            </div>
+                        </b-card-text>
+                    </b-tab>
+                </b-tabs>
+            </b-card>
+        </b-col>
+
+    </b-row>
 </template>
 
 <script>
