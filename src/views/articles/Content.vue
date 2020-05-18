@@ -30,7 +30,6 @@
         <b-card-group class="border shadow p-1 mb-5">
                 <b-card class="border-0 overflow-auto">
 
-                    <!-- 點讚區 -->
                     <b-card
                         tag="article"
                         class="p-2 my-2 text-center">
@@ -44,8 +43,8 @@
                             </b-card-sub-title>
                             <b-card-text class="py-3 text-left" v-html="form.content"></b-card-text>
                             <hr>
-                            <b-card-text>
-                                <!-- 編輯刪除連結 -->
+                            <!-- 文章編輯刪除 -->
+                            <b-card-text v-if="uid === myid" >
                                 <b-button @click="editArticle" id="pencil" variant="outline-white">
                                     <b-icon class="h4" icon="pencil" variant="primary"></b-icon>
                                 </b-button>
@@ -53,11 +52,11 @@
                                     <b-icon class="h4" icon="trash" variant="primary"></b-icon>
                                 </b-button>
 
-                                <b-tooltip target="pencil" placement="topleft" variant="info">編輯</b-tooltip>
-                                <b-tooltip target="trash" placement="topright" variant="danger">刪除</b-tooltip>
+                                <b-tooltip target="pencil" placement="topleft" variant="info">文章編輯</b-tooltip>
+                                <b-tooltip target="trash" placement="topright" variant="danger">文章刪除</b-tooltip>
                             </b-card-text>
                         </b-card-body>
-
+                        <!-- 點讚區 -->
                         <b-card-text>
                             <b-button-group>
                                 <b-button @click="like" href="javascript:;" :class="likeClass" 
@@ -65,6 +64,7 @@
                                     <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已讚' : '點讚' }}
                                 </b-button>
                                 <div class="or"></div>
+                                <!-- 打賞按鈕 -->
                                 <button @click="showQrcode" class="btn btn-success">
                                     <i class="fa fa-heart"></i> 打賞</button>
                             </b-button-group>
@@ -75,7 +75,7 @@
                                 <span v-for="likeUser in likeUsers" :key="likeUser.uname">
                                     <!-- animated 是固定的，swing 是動畫名稱 -->
                                     <router-link :to="`/${likeUser.uname}`"  
-                                    :class="{ 'animated swing' : likeUser.uid == myid }">
+                                    :class="['ml-1',{ 'animated swing' : likeUser.uid == myid }]">
                                         <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
                                         ></b-avatar>
                                     </router-link>
@@ -227,6 +227,7 @@ export default {
                 content: ''
             },
             articleId: undefined,
+            article:'',
             alertShow: null,
             alertMsg:'',
             alertType:'',
@@ -269,7 +270,7 @@ export default {
             // 更新實例的 likeUsers
             this.likeUsers = likeUsers || []
             // 更新 likeClass，點贊用戶列表包含當前用戶時，賦值爲 active，表示已贊
-            this.likeClass = this.likeUsers.some(likeUser => likeUser.uid === this.uid) ? 'active' : ''
+            this.likeClass = this.likeUsers.some(likeUser => likeUser.uid === this.myid) ? 'active' : ''
 
             // 渲染文章的 comments
             this.renderComments(comments)
@@ -368,6 +369,7 @@ export default {
             })
         },
         like(evt) {
+            evt.preventDefault()
             if (!this.auth) {
                 this.showAlert('登入後才能執行此操作','warning')
 
@@ -376,7 +378,6 @@ export default {
                 // 判斷是否已 like
                 const active = target.classList.contains('active')
                 const articleId = this.articleId
-
                 if (active) {
                     // 取消點讚
                     // 清除原 like 樣式
@@ -399,9 +400,19 @@ export default {
                         // this.likeUsers = likeUsers
                         // 重新取值
                         this.likeUsers = this.recompute('likeUsers')
+
+                        // 解決最初新增時會無值的狀態
+                        // store 中有記錄，但無法取得最新增加的 likeUsers，除非重整畫面
+                        if(Array.isArray(this.likeUsers) && this.likeUsers.length == 0){
+                            this.likeUsers.push({uid:this.myid,
+                                                uname:this.user.name,
+                                                uavatar:this.user.avatar })
+
+                        }
+
                     })
                 }
-
+                
             }
         },
         comment() {
@@ -536,7 +547,6 @@ export default {
             const article = this.$store.getters.getArticleById(articleId)
 
             let arr
-
             if (article) {
                 arr = article[key]
             }

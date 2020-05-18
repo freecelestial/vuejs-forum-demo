@@ -97,7 +97,11 @@ export default {
                 // 切換顯示按鈕
                 this.buttonListShow = false
             }else{
+                // 新增或編輯文章的介面
                 // 切換顯示按鈕
+                this.userName = this.user.name
+                this.userAvatar = this.user.avatar
+
                 this.buttonListShow = true
 
             }

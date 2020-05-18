@@ -4,7 +4,7 @@
             <b-tabs pills card>
                 <b-tab v-for="item in filters" :key="item.name" 
                     :title="item.title" @click="setDataByFilter(item.filter)" 
-                    :class="{ active: filter === item.filter }" no-body>
+                    :class="{ active: filter === item.filter }" no-body lazy>
                     <b-card-text>
                         <TabContent :articles="articles"/>
                         <div class="mt-5 overflow-auto">
@@ -95,7 +95,9 @@ export default {
             return parseInt(this.$route.query.page) || 1
         },
         numberOfPages(){
-            return Math.ceil(this.totalRows/this.pageSize)
+            this.$nextTick(() => {
+                 return Math.ceil(this.totalRows/this.pageSize)
+            })
         }
 
     },

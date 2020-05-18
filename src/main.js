@@ -33,7 +33,7 @@ const AddMockData = (() => {
     // 是否產生新資料
     if (isAddMockData) {
         // 合併用戶數據和測試數據，使用合併值作爲所有文章
-        store.commit('UPDATE_ARTICLES', [...userArticles, ...mockArticles(50)])
+        store.commit('UPDATE_ARTICLES', [...userArticles, ...mockArticles(24)])
     } else {
         // 使用原用戶資料的文章
         store.commit('UPDATE_ARTICLES', userArticles)

@@ -1,4 +1,20 @@
-// 返回添加用戶資料(uname,uavatar)後的所有文章
+// id 為傳入的參數
+export const getArticleById = (state, getters) => (id) => {
+    // 使用加入會員資料的所有文章
+    let articles = getters.computedArticles
+
+    if (Array.isArray(articles)) {
+            // 傳進來的 id 和文章的 articleId 相同時，返回這些文章
+            articles = articles.filter(article => parseInt(id) === parseInt(article.articleId))
+            // 有文章的情況下，返回第一筆
+            
+            return articles.length ? articles[0] : null
+    } else {
+            return null
+    }
+}
+
+// 返回添加用戶資料(uname,uavatar)的所有文章
 // 在需要的地方，我們可以使用 store.getters.computedArticles 來代替 store.state.articles
 export const computedArticles = (state) => {
     let articles = state.articles
