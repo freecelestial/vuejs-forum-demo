@@ -72,6 +72,8 @@ export default {
         }
 
     }
-
+    .card-header {
+        padding: .45rem 1.25rem;
+    }
 
 </style>

@@ -59,7 +59,7 @@ export default {
     beforeRouteEnter(to, from, next) {
         next(vm => {
             // 傳入使用者資料物件，以獲取使用者文章
-            vm.articles = vm.$store.getters.getArticlesByUid(null, to.params.user)
+            vm.articles = vm.$store.getters.getArticlesByUid(null, to.params.user).reverse()
         })
     }
 }
