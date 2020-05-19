@@ -72,10 +72,9 @@
                         <b-card-text class="mt-4 mb-0">
                             <div>
                                 <span v-for="likeUser in likeUsers" :key="likeUser.uname">
-                                    <!-- animated 是固定的，swing 是動畫名稱 -->
-                                    <router-link :to="`/${likeUser.uname}`"  
-                                    :class="['ml-1',{ 'animated swing' : likeUser.uid == myid }]">
-                                        <b-avatar variant="light" :src="likeUser.uavatar" alt="avatar" 
+                                    <router-link :to="`/${likeUser.uname}`" class="ml-1">
+                                        <b-avatar class="animate__animated animate__bounce"
+                                        variant="light" :src="likeUser.uavatar" alt="avatar" 
                                         ></b-avatar>
                                     </router-link>
                                 </span>
@@ -392,7 +391,7 @@ export default {
                     })
                 } else {
                     // 添加已讚樣式
-                    this.likeClass = 'active animated rubberBand'
+                    this.likeClass = 'active animate__animated animate__rubberBand'
                     // 分發 like 事件，傳入 isAdd:true 表示加讚
                     this.$store.dispatch('like', { articleId, isAdd: true }).then((likeUsers) => {
                         // this.likeUsers = likeUsers
@@ -565,8 +564,6 @@ export default {
     .CodeMirror,.CodeMirror-scroll {
         min-height: 100px;
     }
-    .fade-enter-active, .fade-leave-active { transition: opacity .5s;}
-    .fade-enter, .fade-leave-to { opacity: 0;}
     .or {
         position: relative;
         float: left;
