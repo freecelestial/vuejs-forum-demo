@@ -58,6 +58,37 @@
                                     </b-form-group>
                                 </ValidationProvider>
 
+                                <hr>
+                                
+                                <div class="d-flex justify-content-md-center">
+                                    <b-card-img class="mb-5" :src="previewPicture" alt="上傳圖片 預覽">
+                                    </b-card-img>
+                                </div>
+
+                                <ValidationProvider name="上傳圖片" 
+                                        rules="" v-slot="{ valid,errors }">
+                                    <b-form-group 
+                                        label="上傳圖片: " 
+                                        description=""
+                                    >
+                                        <b-form-file
+                                            v-model="form.picture"
+                                            accept="image/*"
+                                            placeholder="請選擇檔案..."
+                                            drop-placeholder="拖放檔案至此..."
+                                            @change="uploadPicture"
+                                            :state="errors[0] ? false : (valid ? true : null)"
+                                        ></b-form-file>
+
+                                        <b-form-invalid-feedback id="inputLiveFeedback">{{ errors[0] }}</b-form-invalid-feedback>
+                                    </b-form-group>
+                                </ValidationProvider>
+
+
+
+
+
+
                                 <b-button class="mt-4" :disabled="invalid" type="submit" variant="primary" block>
                                     <b-icon icon="wrench"></b-icon> 修 改
                                 </b-button>
@@ -90,7 +121,10 @@ export default {
         return {
             form:{
                 avatar: '',
+                picture: null,
             },
+            previewPicture:require('@/assets/picture_default.jpg'),
+            uploadUrl:'',
             alertShow: null,
             alertMsg:'',
             alertType:'',
@@ -141,6 +175,41 @@ export default {
         },
         countDownChanged(dismissCountDown) {
             this.dismissCountDown = dismissCountDown
+        },
+        uploadPicture(evt) {
+            evt.preventDefault()
+            if (evt.target.files) {
+                let file1 = evt.target.files[0]
+
+                // 建立預覽
+                var reader = new FileReader()
+                reader.onload = (e) => {
+                    this.previewPicture = e.target.result
+                }
+                this.form.picture=file1
+                reader.readAsDataURL(file1)
+
+                /*
+                    // 上傳檔案
+                    let formData = new FormData()
+                    formData.append('file', file1)
+                    let config = {
+                        headers: {'Content-Type': 'multipart/form-data'}
+                    }
+
+                    this.$axios.post(this.uploadUrl, formData, config).then((response) => {
+                        //console.log(response)
+                        console.log(response.data)
+
+                    }).catch( res => {
+                        console.log(response)
+
+                    })
+                */
+
+            }
+
+
         }
     },
     components: {
