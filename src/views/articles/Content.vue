@@ -106,7 +106,7 @@
                         <template v-slot:header>
                             <h5 class="mb-0">留言數量: <b>{{ comments.length }}</b></h5>
                         </template>
-                        <b-list-group id="reply-list" tag="ul" flush>
+                        <b-list-group id="reply-list" name="fade" tag="transition-group" flush>
                             <b-list-group-item v-for="(comment, index) in comments" :key="comment.commentId">
                                 <b-media tag="li">
                                     <template v-slot:aside>
@@ -561,6 +561,9 @@ export default {
 </script>
 
 <style lang="scss" >
+    .fade-enter-active, .fade-leave-active { transition: opacity .5s;}
+    .fade-enter, .fade-leave-to { opacity: 0;}
+
     .CodeMirror,.CodeMirror-scroll {
         min-height: 100px;
     }
