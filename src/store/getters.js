@@ -6,16 +6,16 @@ export const getArticleById = (state, getters) => (id) => {
     if (Array.isArray(articles)) {
             // 傳進來的 id 和文章的 articleId 相同時，返回這些文章
             articles = articles.filter(article => parseInt(id) === parseInt(article.articleId))
-            // 有文章的情況下，返回第一筆
             
+            // 有文章的情況下，返回第一筆
             return articles.length ? articles[0] : null
     } else {
             return null
     }
 }
 
-// 返回添加用戶資料(uname,uavatar)的所有文章
-// 在需要的地方，我們可以使用 store.getters.computedArticles 來代替 store.state.articles
+// 在文章、留言和按讚中添加用戶頭像( 若是本機用戶會再加上 uname )
+// 在需要的地方，可以使用 store.getters.computedArticles 來代替 store.state.articles
 export const computedArticles = (state) => {
     let articles = state.articles
     let newArticles = []
@@ -85,7 +85,7 @@ export const computedArticles = (state) => {
     return newArticles
 }
 
-// 返回指定 uid 或 user name 下的所有文章
+// 返回 uid 或 user name 下的所有文章
 // 參數 uid 是用戶 ID，user 是用戶名，傳入任一參數可取得該用戶的所有文章
 // 第二個參數是 getters，通過它可以訪問倉庫的派生狀態。
 export const getArticlesByUid = (state, getters) => (uid, user) => {
@@ -94,7 +94,7 @@ export const getArticlesByUid = (state, getters) => (uid, user) => {
   
     if (Array.isArray(articles)) {
         // 通過 http://localhost:8080/:user 訪問『個人專欄』的時候
-        // 通過 user 參數找到 uid
+        // 先透過 user name 找到 uid
         if (user) {
             for (const article of articles) {
                 if (article.uname === user) {
@@ -133,7 +133,7 @@ export const getArticlesByFilter = (state, getters) => (filter) => {
             case 'vote':
                 // 將讚的最多的文章排在前面
                 // 參數 a,b 代表取出第一個和第二個 article ，用於比較
-                // 當回傳值小於 0，則會把 a 排在小於 b 之索引的位置，即 a 排在 b 前面。
+                // 當回傳值小於 0， a 排在 b 前面。
                 filteredArticles.sort((a, b) => {
                     const alikeUsers = Array.isArray(a.likeUsers) ? a.likeUsers : []
                     const blikeUsers = Array.isArray(b.likeUsers) ? b.likeUsers : []
@@ -166,6 +166,7 @@ export const getArticlesByFilter = (state, getters) => (filter) => {
 
                     if (aCommentsLength > 0) {
                         if (bCommentsLength > 0) {
+                            // 取得相差的毫秒數
                             return new Date(bComments[bCommentsLength - 1].date) - 
                             new Date(aComments[aCommentsLength - 1].date)
                         } else {
@@ -185,6 +186,10 @@ export const getArticlesByFilter = (state, getters) => (filter) => {
 
 
 // 根據關鍵字 keyword 返回搜索結果
+// 1. 取所有文章
+// 2. 逐一比對，取出標題或內容有關鍵字的文章
+// 3. 取出文章標題或內容加入高亮，存入要返回的陣列
+// 4. 返回的陣列可再加入排序方式
 export const getArticlesByKeyword = (state, getters) => (keyword, filter) => {
     let articles = getters.computedArticles
     // 搜索結果

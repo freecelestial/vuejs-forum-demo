@@ -18,7 +18,7 @@ export default {
     data() {
         return {
             description: '此網站使用 Vue.js 開發',
-            tooltipTitle: '相關技術如下：Webpack, BootstrapVue, vue-router, Vuex, Mock.js, axios, VeeValidate ',
+            tooltipTitle: '相關技術如下：Webpack, BootstrapVue, vue-router, Vuex, Mock.js, axios, VeeValidate',
             designer: `<span class="ml-1" style="font-size:0.9em">Designed by Jim</span>`,
         }
     }
