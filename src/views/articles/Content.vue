@@ -551,7 +551,11 @@ export default {
             return arr || []
         },
         showQrcode(){
-            this.$refs['qrcode-modal'].show()
+            if (!this.auth) {
+                this.showAlert('登入後才能執行此操作','warning')
+            } else {
+                this.$refs['qrcode-modal'].show()
+            }
         }
     },
     components: {
