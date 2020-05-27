@@ -38,10 +38,10 @@ export const mockArticles = (num = 10) => {
         articles.push({
             uid: index + 2,
             articleId: nextArticleId + index,
-            // 随机生成 10 - 20 字的中文标题
+            // 随机生成 15 - 30 字的中文标题
             title: Random.ctitle(15, 30),
-            // 随机生成 3 - 5 个的中文段落
-            content: Random.cparagraph(32, 50),
+            // 随机生成 12 - 20 个的中文段落
+            content: Random.cparagraph(12, 20),
             date: new Date(),
             likeUsers: [],
             comments: [],
